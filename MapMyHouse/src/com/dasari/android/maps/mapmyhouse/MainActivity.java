@@ -1,10 +1,14 @@
 package com.dasari.android.maps.mapmyhouse;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+//import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
@@ -22,11 +26,33 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MainActivity extends ActionBarActivity implements
+public class MainActivity extends Activity implements
 		OnMyLocationButtonClickListener, ILocationChangeListener, OnClickListener{
 
+	private static final int LOCATION_REQUEST_CODE = 4444;
+	
+	//Log Tag constant
+	private static final String TAG = MainActivity.class.getCanonicalName();
+		
+	// Constant extra value to return with address
+	private static final String MY_ADDRESS_VALUE = "mMyAddress";
+	
+	// Constant extra value for latitude.
+	private static final String LATITUDE = "latitude";
+	
+	// Constant extra value for longitude.
+	private static final String LONGITUDE = "longitude";
+	
+	// Constant extra value for UniqueKey.
+	private static final String UNIQUE_KEY = "unique_key";
+	
 	private GoogleMap mGoogleMap;
 	private ImageView mNavigationButton;
+	private double mLatitude = 333.333;
+	private double mLongitude = 333.333;
+	private String mUniqueKey = "rami9999";
+	private String mAddress = null;
+
 	// private Location mCurrentLocation;
 	// LocationClient mLocationClient;
 
@@ -75,6 +101,26 @@ public class MainActivity extends ActionBarActivity implements
 	}
 
 	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+		if (id == R.id.register) {
+			 registerLocation(mLatitude, mLongitude ,mUniqueKey);
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+	@Override
 	public boolean onMyLocationButtonClick() {
 		LocationManager.getInstance().getLocation(getApplicationContext());
 		return false;
@@ -96,25 +142,51 @@ public class MainActivity extends ActionBarActivity implements
 
 	@Override
 	public void onLocationChange(Location location) {
-		
-		 double latitude = location.getLatitude();
-		 double longitude = location.getLongitude();
-		 LatLng myloc = new LatLng(latitude, longitude);
+		 mLatitude= location.getLatitude();
+		 mLongitude = location.getLongitude();
+		 LatLng myloc = new LatLng(mLatitude, mLongitude);
 		 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myloc, 13));
 		 mGoogleMap.addMarker(new MarkerOptions().title("My Location")
 		 .snippet("This si my location").position(myloc));
 		 
 		 MyLocationDao myLocDao = new MyLocationDao();
 		 myLocDao.setMyHouseID("KA9999");
-		 myLocDao.setMyLocationLatitude(latitude);
-		 myLocDao.setMyLocationLongitude(longitude);
+		 myLocDao.setMyLocationLatitude(mLatitude);
+		 myLocDao.setMyLocationLongitude(mLongitude);
 		 myLocDao.setMyAddress("Flat# 311/A, Deverabisinahalli, Bangalore");
 		 
 		 MapMyHouseDBHelper.getInstance(getApplicationContext()).openDatabase();
 		 MapMyHouseDBHelper.getInstance(getApplicationContext()).insert(myLocDao);
 		 MapMyHouseDBHelper.getInstance(getApplicationContext()).close();
+	 
+	
 	}
 
+	/**
+	 * To register location and showing user his unique key along with latitude
+	 * longitude and prompting user to fill address (optional).
+	 * @param latitude Latitude value of the user location.
+	 * @param longitude Longitude value of the user location.
+	 * @param key
+	 */
+	private void registerLocation(Double latitude, Double longitude, String key) {
+		Intent registerLocation = new Intent(this, RegisterMyLocation.class);
+		registerLocation.putExtra(LATITUDE, latitude);
+		registerLocation.putExtra(LONGITUDE, longitude);
+		registerLocation.putExtra(UNIQUE_KEY, key);
+		startActivityForResult(registerLocation, LOCATION_REQUEST_CODE);
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data){
+		if (requestCode == LOCATION_REQUEST_CODE && resultCode == RESULT_OK){
+			if (data != null){
+				Log.v(TAG, "onResultActivity()... result OK.");
+				mAddress = data.getStringExtra(MY_ADDRESS_VALUE);
+			}
+		}
+	}
+	
 	@Override
 	public void onServiceConnected(Bundle args) {
 		Toast.makeText(getApplicationContext(), "Location service connected", Toast.LENGTH_SHORT).show();

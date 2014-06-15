@@ -50,6 +50,17 @@
     <string name="stop_updates">Stop Updates</string>
     <string name="unknown">--Unknown--</string>
     <string name="unknown_activity_request_code">        Received an unknown activity request code %1$d in onActivityResult.</string>
-
-
+    <string name="title_activity_register_my_location">RegisterMyLocation</string>
+    <string name="location_details">Location details</string>
+    <string name="location_image">Location image</string>
+    <string name="latitude">Latitude</string>
+        <string name="longitude">Longitude</string>
+                <string name="enter_address">Enter address</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+        <string name="unique_id">Unique ID</string>
+        <string name="register">Register</string>
+                
+        
+    
 </resources>
