@@ -10,6 +10,8 @@ import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.dasari.android.maps.mapmyhouse.dao.MyLocationDao;
+import com.dasari.android.maps.mapmyhouse.database.MapMyHouseDBHelper;
 import com.dasari.android.maps.mapmyhouse.interfaces.ILocationChangeListener;
 import com.dasari.android.maps.mapmyhouse.location.LocationManager;
 import com.google.android.gms.common.ConnectionResult;
@@ -101,7 +103,16 @@ public class MainActivity extends ActionBarActivity implements
 		 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myloc, 13));
 		 mGoogleMap.addMarker(new MarkerOptions().title("My Location")
 		 .snippet("This si my location").position(myloc));
-		
+		 
+		 MyLocationDao myLocDao = new MyLocationDao();
+		 myLocDao.setMyHouseID("KA9999");
+		 myLocDao.setMyLocationLatitude(latitude);
+		 myLocDao.setMyLocationLongitude(longitude);
+		 myLocDao.setMyAddress("Flat# 311/A, Deverabisinahalli, Bangalore");
+		 
+		 MapMyHouseDBHelper.getInstance(getApplicationContext()).openDatabase();
+		 MapMyHouseDBHelper.getInstance(getApplicationContext()).insert(myLocDao);
+		 MapMyHouseDBHelper.getInstance(getApplicationContext()).close();
 	}
 
 	@Override

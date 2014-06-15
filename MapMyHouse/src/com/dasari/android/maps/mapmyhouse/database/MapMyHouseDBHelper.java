@@ -30,9 +30,9 @@ public class MapMyHouseDBHelper extends SQLiteOpenHelper {
 	private static MapMyHouseDBHelper mMapMyHpuseDBHelper = null;
 	private SQLiteDatabase mSQLiteDBWriteObject = null;
 
-	private static final String CREATE_TABLE_QUERY = "create table"
-			+ TABLE_NAME + " (" + _ID + " integer autoincrement, "
-			+ MY_HOUSE_ID + " text primary key, " + MY_HOUSE_LATITUDE
+	private static final String CREATE_TABLE_QUERY = "create table "
+			+ TABLE_NAME + " (" + _ID + " integer primary key autoincrement, "
+			+ MY_HOUSE_ID + " text unique not null, " + MY_HOUSE_LATITUDE
 			+ " real not null, " + MY_HOUSE_LONGITUDE + " real not null, "
 			+ MY_HOUSE_ADDRESS + " text, " + RESERVED_1 + " text);";
 
