@@ -1,14 +1,19 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/container"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
-    tools:context="com.dasari.android.maps.mapmyhouse.RegisterMyLocation"
-    tools:ignore="MergeRootFrame" >
+    android:fillViewport="true" >
 
-    <!--
+    <RelativeLayout
+        android:id="@+id/container"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        tools:context="com.dasari.android.maps.mapmyhouse.RegisterMyLocation"
+        tools:ignore="MergeRootFrame" >
+
+        <!--
         <LinearLayout 
         android:layout_gravity="fill_horizontal">
         <ImageView 
@@ -16,78 +21,106 @@
             android:layout_width="wrap_content"
             android:contentDescription="@string/location_image"
             android:src="@drawable/abc_ic_go"/>
-    -->
+        -->
 
-    <TextView
-        android:id="@+id/InnerHeading"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:drawableLeft="@drawable/abc_ic_go"
-        android:text="@string/location_details" />
+        <TextView
+            android:id="@+id/InnerHeading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/abc_ic_go"
+            android:text="@string/location_details" />
 
-    <TextView
-        android:id="@+id/mylatitude"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/InnerHeading"
-        android:text="@string/latitude" />
+        <TextView
+            android:id="@+id/mylatitude"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/InnerHeading"
+            android:text="@string/latitude" />
 
-    <TextView
-        android:id="@+id/mylatitudevalue"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/mylatitude" />
+        <TextView
+            android:id="@+id/mylatitudevalue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/mylatitude" />
 
-    <TextView
-        android:id="@+id/mylongitude"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/mylatitudevalue"
-        android:text="@string/longitude" />
+        <TextView
+            android:id="@+id/mylongitude"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/mylatitudevalue"
+            android:text="@string/longitude" />
 
-    <TextView
-        android:id="@+id/mylongitudevalue"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/mylongitude"
-        />
+        <TextView
+            android:id="@+id/mylongitudevalue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/mylongitude" />
 
-    <TextView
-        android:id="@+id/unique_id"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/unique_id"
-        android:layout_below="@id/mylongitudevalue" />
+        <TextView
+            android:id="@+id/unique_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/mylongitudevalue"
+            android:text="@string/unique_id" />
 
-    <TextView
-        android:id="@+id/uniqueString"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/unique_id" />
+        <TextView
+            android:id="@+id/uniqueString"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/unique_id" />
 
-    <EditText
-        android:id="@+id/myAddress"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/uniqueString"
-        android:hint="@string/enter_address"
-        android:maxLines="6" />
+        <EditText
+            android:id="@+id/myAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/uniqueString"
+            android:hint="@string/enter_address"
+            android:maxLines="4" />
 
-    <Button
-        android:id="@+id/cancel_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/myAddress"
-        android:onClick="cancelActivity"
-        android:text="@string/cancel" />
+        <EditText
+            android:id="@+id/myLocality"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/myAddress"
+            android:hint="@string/locality" />
 
-    <Button
-        android:id="@+id/ok_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/myAddress"
-        android:onClick="okActivity"
-        android:layout_toRightOf="@id/cancel_button"
-        android:text="@string/ok" />
+        <EditText
+            android:id="@+id/myAdminArea"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/myLocality"
+            android:hint="@string/admin" />
 
-</RelativeLayout>
+        <EditText
+            android:id="@+id/myPostalCode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/myAdminArea"
+            android:hint="@string/postal" />
+
+        <EditText
+            android:id="@+id/myCountry"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/myPostalCode"
+            android:hint="@string/country" />
+
+        <Button
+            android:id="@+id/cancel_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/myCountry"
+            android:onClick="cancelActivity"
+            android:text="@string/cancel" />
+
+        <Button
+            android:id="@+id/ok_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/myCountry"
+            android:layout_alignParentRight="true"
+            android:onClick="okActivity"
+            android:text="@string/ok" />
+    </RelativeLayout>
+
+</ScrollView>

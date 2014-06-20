@@ -54,13 +54,15 @@
     <string name="location_details">Location details</string>
     <string name="location_image">Location image</string>
     <string name="latitude">Latitude</string>
-        <string name="longitude">Longitude</string>
-                <string name="enter_address">Enter address</string>
+    <string name="longitude">Longitude</string>
+    <string name="enter_address">Enter address</string>
     <string name="cancel">Cancel</string>
-    <string name="ok">OK</string>
-        <string name="unique_id">Unique ID</string>
-        <string name="register">Register</string>
-                
-        
-    
+    <string name="ok">Register</string>
+    <string name="unique_id">Unique ID</string>
+    <string name="register">Register</string>
+    <string name="locality">Locality</string>
+    <string name="admin">Administrator area</string>
+    <string name="postal">Postal code</string>
+    <string name="country">Country</string>
+
 </resources>

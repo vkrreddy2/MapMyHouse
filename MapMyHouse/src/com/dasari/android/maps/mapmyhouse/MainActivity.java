@@ -1,9 +1,15 @@
 package com.dasari.android.maps.mapmyhouse;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
+
 import android.app.Activity;
 import android.content.Intent;
+import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -14,8 +20,6 @@ import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.dasari.android.maps.mapmyhouse.dao.MyLocationDao;
-import com.dasari.android.maps.mapmyhouse.database.MapMyHouseDBHelper;
 import com.dasari.android.maps.mapmyhouse.interfaces.ILocationChangeListener;
 import com.dasari.android.maps.mapmyhouse.location.LocationManager;
 import com.google.android.gms.common.ConnectionResult;
@@ -46,12 +50,32 @@ public class MainActivity extends Activity implements
 	// Constant extra value for UniqueKey.
 	private static final String UNIQUE_KEY = "unique_key";
 	
+	// Constant extra value for locality.
+	private static final String LOCALITY = "locality";
+	
+	// Constant extra value for administrator.
+	private static final String ADMIN = "administration";
+	
+	// Constant extra value for postal code.
+	private static final String POSTAL_CODE = "postal_code";
+	
+	// Constant extra value for country.
+	private static final String COUNTRY = "country";
+	
 	private GoogleMap mGoogleMap;
 	private ImageView mNavigationButton;
 	private double mLatitude = 333.333;
 	private double mLongitude = 333.333;
 	private String mUniqueKey = "rami9999";
 	private String mAddress = null;
+	private String mPostalCode = null;
+	private String mCountryName = null;
+	private String mAdminArea = null;
+	private String mLocality = null;
+	
+	private String[] mCityAddress = null;
+
+	private boolean mRegisterEnable;
 
 	// private Location mCurrentLocation;
 	// LocationClient mLocationClient;
@@ -108,6 +132,11 @@ public class MainActivity extends Activity implements
 		return true;
 	}
 
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		MenuItem register = menu.findItem(R.id.register);
+		register.setVisible(mRegisterEnable);
+		return true;
+	}
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle action bar item clicks here. The action bar will
@@ -147,21 +176,58 @@ public class MainActivity extends Activity implements
 		 LatLng myloc = new LatLng(mLatitude, mLongitude);
 		 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myloc, 13));
 		 mGoogleMap.addMarker(new MarkerOptions().title("My Location")
-		 .snippet("This si my location").position(myloc));
+		 .snippet("This is my location").position(myloc));
 		 
-		 MyLocationDao myLocDao = new MyLocationDao();
-		 myLocDao.setMyHouseID("KA9999");
-		 myLocDao.setMyLocationLatitude(mLatitude);
-		 myLocDao.setMyLocationLongitude(mLongitude);
-		 myLocDao.setMyAddress("Flat# 311/A, Deverabisinahalli, Bangalore");
-		 
-		 MapMyHouseDBHelper.getInstance(getApplicationContext()).openDatabase();
-		 MapMyHouseDBHelper.getInstance(getApplicationContext()).insert(myLocDao);
-		 MapMyHouseDBHelper.getInstance(getApplicationContext()).close();
-	 
+         new DownlaodAddressFormLatLog().execute(mLatitude, mLongitude);
+//		 MyLocationDao myLocDao = new MyLocationDao();
+//		 myLocDao.setMyHouseID("KA9999");
+//		 myLocDao.setMyLocationLatitude(mLatitude);
+//		 myLocDao.setMyLocationLongitude(mLongitude);
+//		 myLocDao.setMyAddress("Flat# 311/A, Deverabisinahalli, Bangalore");
+//		 
+//		 MapMyHouseDBHelper.getInstance(getApplicationContext()).openDatabase();
+//		 MapMyHouseDBHelper.getInstance(getApplicationContext()).insert(myLocDao);
+//		 MapMyHouseDBHelper.getInstance(getApplicationContext()).close();
+//	 
 	
 	}
 
+	private class DownlaodAddressFormLatLog extends AsyncTask<Double, Void, Void>{
+
+		@Override
+		protected Void doInBackground(Double... params) {
+			 // Used to get the NEAREST address of the location pointed by
+			 // longitude and latitude.
+			 Geocoder myLoc = new Geocoder(MainActivity.this, Locale.getDefault());
+			 List<android.location.Address> myadd;
+			try {
+				myadd = myLoc.getFromLocation(params[0], params[1], 1);
+				 if (myadd !=null && myadd.size()>0){
+					 for (android.location.Address add : myadd){
+						 mLocality = add.getLocality();
+						 mAdminArea = add.getAdminArea();
+						 mPostalCode = add.getPostalCode();
+						 mCountryName = add.getCountryName();
+						 Log.v("rami", "add     "+ add + "size -- " +myadd.size() + "\n"
+								+ mLocality + "\n"+ mAdminArea + "\n"+ mPostalCode + "\n"+ mCountryName);
+					 }
+					    
+				 }
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return null;
+			
+		}
+		
+		@Override
+		protected void onPostExecute(Void result) {
+			super.onPostExecute(result);
+			mRegisterEnable = true;
+			invalidateOptionsMenu();
+		}
+	}
 	/**
 	 * To register location and showing user his unique key along with latitude
 	 * longitude and prompting user to fill address (optional).
@@ -174,6 +240,11 @@ public class MainActivity extends Activity implements
 		registerLocation.putExtra(LATITUDE, latitude);
 		registerLocation.putExtra(LONGITUDE, longitude);
 		registerLocation.putExtra(UNIQUE_KEY, key);
+		registerLocation.putExtra(LOCALITY, mLocality);
+		registerLocation.putExtra(ADMIN, mAdminArea);
+		registerLocation.putExtra(POSTAL_CODE, mPostalCode);
+		registerLocation.putExtra(COUNTRY, mCountryName);
+
 		startActivityForResult(registerLocation, LOCATION_REQUEST_CODE);
 	}
 

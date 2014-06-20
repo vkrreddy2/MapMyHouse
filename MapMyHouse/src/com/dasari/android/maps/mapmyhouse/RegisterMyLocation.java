@@ -1,5 +1,6 @@
 package com.dasari.android.maps.mapmyhouse;
 
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -26,6 +27,18 @@ public class RegisterMyLocation extends Activity {
 	// Constant extra value for UniqueKey.
 	private static final String UNIQUE_KEY = "unique_key";
 	
+	// Constant extra value for locality.
+	private static final String LOCALITY = "locality";
+	
+	// Constant extra value for administrator.
+	private static final String ADMIN = "administration";
+	
+	// Constant extra value for postal code.
+	private static final String POSTAL_CODE = "postal_code";
+	
+	// Constant extra value for country.
+	private static final String COUNTRY = "country";
+	
 	// Default values for latitude and longitude can any thing out of the range
 	// +180 to -180. Chosen 333.333
 	// Latitude value to get from intent extras.
@@ -50,8 +63,30 @@ public class RegisterMyLocation extends Activity {
 	// Address value which user types in edit text.
 	private EditText mAddress;
 	
+	// Locality from Lat Lon.
+	private EditText mLocality;
+	
+	// Admin from Lat Lon.
+	private EditText mAdmin;
+	
+	// Postal code from Lat Lon.
+	private EditText mPostalCode;
+	
+	// Country from Lat Lon.
+	private EditText mCountry;
+	
+	
+	
 	// Root view for this layout.
 	private View mRootView;
+
+	private String mLocalityExtra;
+
+	private String mAdminExtra;
+
+	private String mPostalCodeExtra;
+
+	private String mCountryExtra;
 	
 
 	@Override
@@ -62,6 +97,10 @@ public class RegisterMyLocation extends Activity {
 		mMyLatitude = localIntent.getDoubleExtra(LATITUDE, 333.333);
 		mMyLongtitude = localIntent.getDoubleExtra(LONGITUDE, 333.333);
 		mMyUniqueKey = localIntent.getStringExtra(UNIQUE_KEY);
+		mLocalityExtra = localIntent.getStringExtra(LOCALITY);
+		mAdminExtra = localIntent.getStringExtra(ADMIN);
+		mPostalCodeExtra = localIntent.getStringExtra(POSTAL_CODE);
+		mCountryExtra = localIntent.getStringExtra(COUNTRY);
 		initView();
 
 	}
@@ -78,8 +117,15 @@ public class RegisterMyLocation extends Activity {
 		mUniqueString = (TextView)mRootView.findViewById(R.id.uniqueString);
 		mUniqueString.setText(mMyUniqueKey);
 		mAddress = (EditText)mRootView.findViewById(R.id.myAddress);
-		
-		
+		mLocality = (EditText)mRootView.findViewById(R.id.myLocality);
+		mLocality.setText(mLocalityExtra);
+		mAdmin = (EditText)mRootView.findViewById(R.id.myAdminArea);
+		mAdmin.setText(mAdminExtra);
+		mPostalCode = (EditText)mRootView.findViewById(R.id.myPostalCode);
+		mPostalCode.setText(mPostalCodeExtra);
+		mCountry = (EditText)mRootView.findViewById(R.id.myCountry);
+		mCountry.setText(mCountryExtra);
+			
 	}
 
 	public void okActivity(View v) {
