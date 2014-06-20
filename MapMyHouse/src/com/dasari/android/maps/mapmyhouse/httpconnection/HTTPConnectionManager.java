@@ -22,7 +22,7 @@ public class HTTPConnectionManager {
 		mLocationRequestAsyncTask = new MyLocationRequestTask(
 				context, requestID);
 		mLocationRequestAsyncTask.registerResponseListener(listenr);
-		mLocationRequestAsyncTask.doInBackground(url);
+		mLocationRequestAsyncTask.execute(url);
 	}
 	
 	public void cancelrequest()
