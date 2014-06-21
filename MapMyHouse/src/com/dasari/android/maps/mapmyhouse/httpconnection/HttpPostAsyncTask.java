@@ -6,80 +6,94 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.apache.http.params.HttpParams;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.dasari.android.maps.mapmyhouse.httpconnection.HttpConnectionManager.IOResponseListener;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 
-public class HttpPostAsyncTask
-		extends
-			AsyncTask<String, Integer, Integer> {
+public class HttpPostAsyncTask extends AsyncTask<String, Integer, String> {
 
-	private static final String POST_URL = null;
-	private Context mContext;
-
-	public HttpPostAsyncTask(Context context) {
-		// TODO Auto-generated constructor stub
+	private IOResponseListener mResponseListener = null;
+	private Context mContext = null;
+	private int mRequestID = -1;
+	private static String STATUS_SUCCESS = "success";
+	private HttpParams mHttpParams = null;
+	public HttpPostAsyncTask(Context context, int requestID, IOResponseListener listener, HttpParams params) {
 		mContext = context;
+		mRequestID = requestID;
+		mResponseListener = listener;
+		mHttpParams = params;
 	}
 	@Override
 	protected void onPreExecute() {
-		// TODO Auto-generated method stub
-		super.onPreExecute();
 		checkDataConnectivity();
 	}
-	
+
 	private boolean checkDataConnectivity() {
-		ConnectivityManager checkConnection = (ConnectivityManager)mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo wifiInfo = (NetworkInfo)checkConnection.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-		NetworkInfo mobileInfo = (NetworkInfo)checkConnection.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-		if (wifiInfo.isConnected() || mobileInfo.isConnected()){
+		ConnectivityManager checkConnection = (ConnectivityManager) mContext
+				.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo wifiInfo = (NetworkInfo) checkConnection
+				.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+		NetworkInfo mobileInfo = (NetworkInfo) checkConnection
+				.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+		if (wifiInfo.isConnected() || mobileInfo.isConnected()) {
 			return true;
 		}
 		return false;
 	}
 	@Override
-	protected Integer doInBackground(String... params) {
+	protected String doInBackground(String... params) {
 		// TODO Auto-generated method stub
 		URL postUrl;
 		DataOutputStream output;
-
 		try {
-			postUrl = new URL(POST_URL);
+			String api = (String) params[0];
 
-			HttpURLConnection connect = (HttpURLConnection) postUrl
+			postUrl = new URL(api);
+			HttpURLConnection connection = (HttpURLConnection) postUrl
 					.openConnection();
-			connect.setRequestMethod("POST");
-			connect.setDoOutput(true);
+			connection.setRequestMethod("POST");
+			connection.setDoOutput(true);
 			// HTTP/1.0 may not support this function.
-			connect.setChunkedStreamingMode(0);
-			connect.setUseCaches(false);
-			connect.setRequestProperty("content-type", "application/json");
+			connection.setChunkedStreamingMode(0);
+			connection.setUseCaches(false);
+			connection.setRequestProperty("content-type", "application/json");
 
-			connect.connect();
+			connection.connect();
+			
 			JSONObject jsonParams = new JSONObject();
-			jsonParams.put("latitude", params[0]);
-			jsonParams.put("longitude", params[1]);
-			jsonParams.put("unique_key", params[2]);
-			jsonParams.put("address", params[3]);
+			jsonParams.put("unique_key", mHttpParams.getParameter("unique_key"));
+			jsonParams.put("latitude", mHttpParams.getParameter("latitude"));
+			jsonParams.put("longitude", mHttpParams.getParameter("longitude"));
+			jsonParams.put("address", mHttpParams.getParameter("address"));
 
-			output = new DataOutputStream(connect.getOutputStream());
+			output = new DataOutputStream(connection.getOutputStream());
 			output.writeBytes(jsonParams.toString());
+			
+			return STATUS_SUCCESS;
+			
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			mResponseListener.onExceptionReceived(e);
+			return null;
 		} catch (MalformedURLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			mResponseListener.onExceptionReceived(e1);
+			return null;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			mResponseListener.onExceptionReceived(e);
+			return null;
 		}
-
-		return null;
 	}
-
+	@Override
+	protected void onPostExecute(String result) {
+		if(result != null)
+		{
+			mResponseListener.onResponseReceived(result, mRequestID);
+		}
+	}
 }
