@@ -11,7 +11,6 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 //import android.support.v7.app.ActionBarActivity;
@@ -33,47 +32,16 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class MainActivity extends Activity implements
 		OnMyLocationButtonClickListener, ILocationChangeListener, OnClickListener{
 
-	private static final int LOCATION_REQUEST_CODE = 4444;
 	
-	//Log Tag constant
-	private static final String TAG = MainActivity.class.getCanonicalName();
-		
-	// Constant extra value to return with address
-	private static final String MY_ADDRESS_VALUE = "mMyAddress";
+	// Parcelable location details 
+	public LocationDetails myDetails;
 	
-	// Constant extra value for latitude.
-	private static final String LATITUDE = "latitude";
-	
-	// Constant extra value for longitude.
-	private static final String LONGITUDE = "longitude";
-	
-	// Constant extra value for UniqueKey.
-	private static final String UNIQUE_KEY = "unique_key";
-	
-	// Constant extra value for locality.
-	private static final String LOCALITY = "locality";
-	
-	// Constant extra value for administrator.
-	private static final String ADMIN = "administration";
-	
-	// Constant extra value for postal code.
-	private static final String POSTAL_CODE = "postal_code";
-	
-	// Constant extra value for country.
-	private static final String COUNTRY = "country";
+	// Extra Constant for passing to register acitivity..
+	private static final String LOACL_DETAILS_PARCEL = "com.android.dasari.myLocalDetails";
 	
 	private GoogleMap mGoogleMap;
 	private ImageView mNavigationButton;
-	private double mLatitude = 333.333;
-	private double mLongitude = 333.333;
-	private String mUniqueKey = "rami9999";
-	private String mAddress = null;
-	private String mPostalCode = null;
-	private String mCountryName = null;
-	private String mAdminArea = null;
-	private String mLocality = null;
-	
-	private String[] mCityAddress = null;
+
 
 	private boolean mRegisterEnable;
 
@@ -87,6 +55,7 @@ public class MainActivity extends Activity implements
 		MyLocationManager.getInstance().registerLocationListener(this);
 		MyLocationManager.getInstance().initialize(getApplicationContext());
 		
+		myDetails = new LocationDetails();
 		mGoogleMap = ((MapFragment) getFragmentManager().findFragmentById(
 				R.id.map)).getMap();
 		mGoogleMap.setOnMyLocationButtonClickListener(this);
@@ -144,7 +113,7 @@ public class MainActivity extends Activity implements
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 		if (id == R.id.register) {
-			 registerLocation(mLatitude, mLongitude ,mUniqueKey);
+			 registerLocation();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -171,14 +140,16 @@ public class MainActivity extends Activity implements
 
 	@Override
 	public void onLocationChange(Location location) {
-		 mLatitude= location.getLatitude();
-		 mLongitude = location.getLongitude();
-		 LatLng myloc = new LatLng(mLatitude, mLongitude);
+		 myDetails.setLatitude(location.getLatitude());
+		 myDetails.setLongitude(location.getLongitude());
+		 double localLat = myDetails.getLatitude();
+		 double localLong = myDetails.getLongitude();
+		 LatLng myloc = new LatLng(localLat, localLong);
 		 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myloc, 13));
 		 mGoogleMap.addMarker(new MarkerOptions().title("My Location")
 		 .snippet("This is my location").position(myloc));
 		 
-         new DownlaodAddressFormLatLog().execute(mLatitude, mLongitude);
+         new DownlaodAddressFormLatLog().execute(localLat, localLong);
 //		 MyLocationDao myLocDao = new MyLocationDao();
 //		 myLocDao.setMyHouseID("KA9999");
 //		 myLocDao.setMyLocationLatitude(mLatitude);
@@ -204,12 +175,10 @@ public class MainActivity extends Activity implements
 				myadd = myLoc.getFromLocation(params[0], params[1], 1);
 				 if (myadd !=null && myadd.size()>0){
 					 for (android.location.Address add : myadd){
-						 mLocality = add.getLocality();
-						 mAdminArea = add.getAdminArea();
-						 mPostalCode = add.getPostalCode();
-						 mCountryName = add.getCountryName();
-						 Log.v("rami", "add     "+ add + "size -- " +myadd.size() + "\n"
-								+ mLocality + "\n"+ mAdminArea + "\n"+ mPostalCode + "\n"+ mCountryName);
+						 myDetails.setLocality(add.getLocality());
+						 myDetails.setAdmin(add.getAdminArea());
+						 myDetails.setPostalCode(add.getPostalCode());
+						 myDetails.setCountry(add.getCountryName());
 					 }
 					    
 				 }
@@ -235,28 +204,15 @@ public class MainActivity extends Activity implements
 	 * @param longitude Longitude value of the user location.
 	 * @param key
 	 */
-	private void registerLocation(Double latitude, Double longitude, String key) {
+	private void registerLocation() {
 		Intent registerLocation = new Intent(this, RegisterMyLocation.class);
-		registerLocation.putExtra(LATITUDE, latitude);
-		registerLocation.putExtra(LONGITUDE, longitude);
-		registerLocation.putExtra(UNIQUE_KEY, key);
-		registerLocation.putExtra(LOCALITY, mLocality);
-		registerLocation.putExtra(ADMIN, mAdminArea);
-		registerLocation.putExtra(POSTAL_CODE, mPostalCode);
-		registerLocation.putExtra(COUNTRY, mCountryName);
+		Bundle bundle = new Bundle();
+		bundle.putParcelable(LOACL_DETAILS_PARCEL, myDetails);
+		registerLocation.putExtras(bundle);
 
-		startActivityForResult(registerLocation, LOCATION_REQUEST_CODE);
+		startActivity(registerLocation);
 	}
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data){
-		if (requestCode == LOCATION_REQUEST_CODE && resultCode == RESULT_OK){
-			if (data != null){
-				Log.v(TAG, "onResultActivity()... result OK.");
-				mAddress = data.getStringExtra(MY_ADDRESS_VALUE);
-			}
-		}
-	}
 	
 	@Override
 	public void onServiceConnected(Bundle args) {

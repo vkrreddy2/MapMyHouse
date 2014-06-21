@@ -12,6 +12,9 @@ import android.widget.TextView;
 
 public class RegisterMyLocation extends Activity {
 
+	// Extra Constant for passing to register acitivity..
+	private static final String LOACL_DETAILS_PARCEL = "com.android.dasari.myLocalDetails";
+	
 	// Log tag for this class.
 	private static final String TAG = RegisterMyLocation.class.getCanonicalName();
 	
@@ -87,6 +90,8 @@ public class RegisterMyLocation extends Activity {
 	private String mPostalCodeExtra;
 
 	private String mCountryExtra;
+
+	private LocationDetails locDetails;
 	
 
 	@Override
@@ -94,13 +99,14 @@ public class RegisterMyLocation extends Activity {
 	    super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_register_my_location);
 		Intent localIntent = getIntent();
-		mMyLatitude = localIntent.getDoubleExtra(LATITUDE, 333.333);
-		mMyLongtitude = localIntent.getDoubleExtra(LONGITUDE, 333.333);
-		mMyUniqueKey = localIntent.getStringExtra(UNIQUE_KEY);
-		mLocalityExtra = localIntent.getStringExtra(LOCALITY);
-		mAdminExtra = localIntent.getStringExtra(ADMIN);
-		mPostalCodeExtra = localIntent.getStringExtra(POSTAL_CODE);
-		mCountryExtra = localIntent.getStringExtra(COUNTRY);
+		locDetails = localIntent.getParcelableExtra(LOACL_DETAILS_PARCEL);
+		mMyLatitude = locDetails.getLatitude();
+		mMyLongtitude = locDetails.getLongitude();
+		mMyUniqueKey = locDetails.getUniqueKey();
+		mLocalityExtra = locDetails.getLocality();
+		mAdminExtra = locDetails.getAdmin();
+		mPostalCodeExtra = locDetails.getPostalCode();
+		mCountryExtra = locDetails.getCountry();
 		initView();
 
 	}
@@ -129,22 +135,13 @@ public class RegisterMyLocation extends Activity {
 	}
 
 	public void okActivity(View v) {
-		Intent returnIntent = new Intent();
-		String Addressvalue = mAddress.getText().toString();
-		Log.v(TAG, "Click on OK button.. addressvalue  "+ Addressvalue);
-		returnIntent.putExtra(MY_ADDRESS_VALUE, Addressvalue);
-		setResult(RESULT_OK, returnIntent);
+
 		finish();
 		
 	}
 	
 	public void cancelActivity(View v) {
-		Intent returnIntent = new Intent();
-		String Addressvalue = mAddress.getText().toString();
-		Log.v(TAG, " Click on Cancel button.. addressvalue  "+ Addressvalue);
-		returnIntent.putExtra(MY_ADDRESS_VALUE, Addressvalue);
-		setResult(RESULT_CANCELED, returnIntent);
-		Log.i("rami", "click cancel");
+
 		finish();
 		
 	}
