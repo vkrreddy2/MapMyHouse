@@ -14,14 +14,14 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 
-public class HttpPostConnectonBackground
+public class HttpPostAsyncTask
 		extends
 			AsyncTask<String, Integer, Integer> {
 
 	private static final String POST_URL = null;
 	private Context mContext;
 
-	public HttpPostConnectonBackground(Context context) {
+	public HttpPostAsyncTask(Context context) {
 		// TODO Auto-generated constructor stub
 		mContext = context;
 	}

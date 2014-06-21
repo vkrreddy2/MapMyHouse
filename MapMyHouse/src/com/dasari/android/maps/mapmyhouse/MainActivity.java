@@ -20,8 +20,8 @@ import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.dasari.android.maps.mapmyhouse.interfaces.ILocationChangeListener;
-import com.dasari.android.maps.mapmyhouse.location.LocationManager;
+import com.dasari.android.maps.mapmyhouse.location.MyLocationManager;
+import com.dasari.android.maps.mapmyhouse.location.MyLocationManager.ILocationChangeListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -84,8 +84,8 @@ public class MainActivity extends Activity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		LocationManager.getInstance().registerLocationListener(this);
-		LocationManager.getInstance().initialize(getApplicationContext());
+		MyLocationManager.getInstance().registerLocationListener(this);
+		MyLocationManager.getInstance().initialize(getApplicationContext());
 		
 		mGoogleMap = ((MapFragment) getFragmentManager().findFragmentById(
 				R.id.map)).getMap();
@@ -151,7 +151,7 @@ public class MainActivity extends Activity implements
 	}
 	@Override
 	public boolean onMyLocationButtonClick() {
-		LocationManager.getInstance().getLocation(getApplicationContext());
+		MyLocationManager.getInstance().getLocation(getApplicationContext());
 		return false;
 	}
 	
@@ -159,13 +159,13 @@ public class MainActivity extends Activity implements
 	protected void onStart() {
 		// TODO Auto-generated method stub
 		super.onStart();
-		LocationManager.getInstance().connectToLocationService();
+		MyLocationManager.getInstance().connectToLocationService();
 	}
 	
 	@Override
 	protected void onStop() {
-		LocationManager.getInstance().stopPeriodicUpdates();
-		LocationManager.getInstance().unRegisterLocationListener();
+		MyLocationManager.getInstance().stopPeriodicUpdates();
+		MyLocationManager.getInstance().unRegisterLocationListener();
 		super.onStop();
 	}
 

@@ -23,7 +23,6 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.dasari.android.maps.mapmyhouse.R;
-import com.dasari.android.maps.mapmyhouse.interfaces.ILocationChangeListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -32,7 +31,7 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 
 
-public class LocationManager implements LocationListener,
+public class MyLocationManager implements LocationListener,
 		GooglePlayServicesClient.ConnectionCallbacks,
 		GooglePlayServicesClient.OnConnectionFailedListener {
 
@@ -42,7 +41,7 @@ public class LocationManager implements LocationListener,
 	// Stores the current instantiation of the location client in this object
 	private LocationClient mLocationClient;
 
-	private static LocationManager mLocationManager;
+	private static MyLocationManager mLocationManager;
 	// Handle to SharedPreferences for this app
 	SharedPreferences mPrefs;
 
@@ -55,9 +54,9 @@ public class LocationManager implements LocationListener,
 	 */
 	boolean mUpdatesRequested = false;
 
-	public static LocationManager getInstance() {
+	public static MyLocationManager getInstance() {
 		if (mLocationManager == null) {
-			mLocationManager = new LocationManager();
+			mLocationManager = new MyLocationManager();
 		}
 
 		return mLocationManager;
@@ -210,4 +209,12 @@ public class LocationManager implements LocationListener,
         // After disconnect() is called, the client is considered "dead".
         mLocationClient.disconnect();
     }
+    
+    public interface ILocationChangeListener {
+    	public void onLocationChange(Location location);
+    	public void onServiceConnected(Bundle args);
+    	public void onServiceDisconnected();
+    	public void onServiceConnectionFailed(ConnectionResult arg0);
+    }
+
 }

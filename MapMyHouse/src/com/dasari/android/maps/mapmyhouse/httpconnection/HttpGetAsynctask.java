@@ -6,19 +6,22 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import com.dasari.android.maps.mapmyhouse.httpconnection.HttpConnectionManager.IOResponseListener;
+
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 
-public class MyLocationRequestTask extends AsyncTask<String, Void, String> {
+public class HttpGetAsynctask extends AsyncTask<String, Void, String> {
 
 	private IOResponseListener mResponseListener = null;
 	private Context mContext = null;
 	private int mRequestID = -1;
 
-	public MyLocationRequestTask(Context context, int requestID) {
+	public HttpGetAsynctask(Context context, int requestID, IOResponseListener listener) {
 		mContext = context;
 		mRequestID = requestID;
+		mResponseListener = listener;
 	}
 	public void registerResponseListener(IOResponseListener listener) {
 		mResponseListener = listener;
