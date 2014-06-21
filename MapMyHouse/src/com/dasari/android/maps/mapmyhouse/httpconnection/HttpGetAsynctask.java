@@ -23,9 +23,7 @@ public class HttpGetAsynctask extends AsyncTask<String, Void, String> {
 		mRequestID = requestID;
 		mResponseListener = listener;
 	}
-	public void registerResponseListener(IOResponseListener listener) {
-		mResponseListener = listener;
-	}
+	
 	@Override
 	protected void onPreExecute() {
 		checkInternetConenction();
