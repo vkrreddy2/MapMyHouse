@@ -8,5 +8,11 @@
         android:orderInCategory="100"
         android:showAsAction="always"
         android:title="@string/register"/>
+    <item
+        android:id="@+id/search"
+        android:orderInCategory="200"
+        android:showAsAction="always"
+        android:title="@string/search"
+        android:icon="@drawable/ic_action_search"/>
 
 </menu>
