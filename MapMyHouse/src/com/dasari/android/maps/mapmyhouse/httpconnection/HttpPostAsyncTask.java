@@ -16,9 +16,11 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.util.Log;
 
 public class HttpPostAsyncTask extends AsyncTask<String, Integer, String> {
 
+	private String TAG = HttpGetAsynctask.class.getCanonicalName();
 	private IOResponseListener mResponseListener = null;
 	private Context mContext = null;
 	private int mRequestID = -1;
@@ -35,7 +37,7 @@ public class HttpPostAsyncTask extends AsyncTask<String, Integer, String> {
 		checkDataConnectivity();
 	}
 
-	private boolean checkDataConnectivity() {
+	private void checkDataConnectivity() {
 		ConnectivityManager checkConnection = (ConnectivityManager) mContext
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo wifiInfo = (NetworkInfo) checkConnection
@@ -43,20 +45,21 @@ public class HttpPostAsyncTask extends AsyncTask<String, Integer, String> {
 		NetworkInfo mobileInfo = (NetworkInfo) checkConnection
 				.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
 		if (wifiInfo.isConnected() || mobileInfo.isConnected()) {
-			return true;
-		}
-		return false;
+			// Do nothing as data connection is present.
+		} else
+			mResponseListener.onNoInternetAceess();
 	}
 	@Override
 	protected String doInBackground(String... params) {
 		// TODO Auto-generated method stub
-		URL postUrl;
-		DataOutputStream output;
+		URL postUrl = null;
+		DataOutputStream output = null;
+		HttpURLConnection connection = null;
 		try {
 			String api = (String) params[0];
 
 			postUrl = new URL(api);
-			HttpURLConnection connection = (HttpURLConnection) postUrl
+			connection = (HttpURLConnection) postUrl
 					.openConnection();
 			connection.setRequestMethod("POST");
 			connection.setDoOutput(true);
@@ -68,9 +71,9 @@ public class HttpPostAsyncTask extends AsyncTask<String, Integer, String> {
 			connection.connect();
 			
 			JSONObject jsonParams = new JSONObject();
-			jsonParams.put("unique_key", mHttpParams.getParameter("unique_key"));
 			jsonParams.put("latitude", mHttpParams.getParameter("latitude"));
 			jsonParams.put("longitude", mHttpParams.getParameter("longitude"));
+			jsonParams.put("unique_key", mHttpParams.getParameter("unique_key"));
 			jsonParams.put("address", mHttpParams.getParameter("address"));
 
 			output = new DataOutputStream(connection.getOutputStream());
@@ -79,15 +82,22 @@ public class HttpPostAsyncTask extends AsyncTask<String, Integer, String> {
 			return STATUS_SUCCESS;
 			
 		} catch (JSONException e) {
+			Log.e(TAG, "An JSON exception while post");
 			mResponseListener.onExceptionReceived(e);
 			return null;
 		} catch (MalformedURLException e1) {
+			Log.e(TAG, "An Mal fromed Url exception while post");
 			mResponseListener.onExceptionReceived(e1);
 			return null;
-		} catch (IOException e) {
-			mResponseListener.onExceptionReceived(e);
+		} catch (IOException e2) {
+			Log.e(TAG, "An Iu exception while post");
+			mResponseListener.onExceptionReceived(e2);
 			return null;
+		} finally {
+			if (connection != null)
+				connection.disconnect();
 		}
+
 	}
 	@Override
 	protected void onPostExecute(String result) {

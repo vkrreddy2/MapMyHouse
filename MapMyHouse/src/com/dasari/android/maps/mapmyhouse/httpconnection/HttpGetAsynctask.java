@@ -30,10 +30,13 @@ public class HttpGetAsynctask extends AsyncTask<String, Void, String> {
 	}
 	@Override
 	protected String doInBackground(String... params) {
+		String api = null;
+		URL url = null;
+		HttpURLConnection conn = null;
 		try {
-			String api = (String) params[0];
-			URL url = new URL(api);
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			api = (String) params[0];
+			url = new URL(api);
+			conn = (HttpURLConnection) url.openConnection();
 			conn.setReadTimeout(10000);
 			conn.setConnectTimeout(15000);
 			conn.setRequestMethod("GET");
@@ -51,6 +54,9 @@ public class HttpGetAsynctask extends AsyncTask<String, Void, String> {
 		} catch (Exception e) {
 			mResponseListener.onExceptionReceived(e);
 			return null;
+		}finally {
+			if (conn != null)
+			    conn.disconnect();
 		}
 	}
 
