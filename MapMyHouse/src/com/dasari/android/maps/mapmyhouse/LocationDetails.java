@@ -36,7 +36,7 @@ public class LocationDetails implements Parcelable{
 	}
 	// Setter method for Latitude.
 	public void setLatitude (double setLong){
-		mLongitude = setLong;
+		mLatitude = setLong;
 	}
 	
 	// Getter method for Longitude.
@@ -133,7 +133,7 @@ public class LocationDetails implements Parcelable{
 			lDetails.mLocality = source.readString();
 			lDetails.mPostalCode = source.readString();
 			lDetails.mCountryName = source.readString();
-			return null;
+			return lDetails;
 		}
 
 		@Override

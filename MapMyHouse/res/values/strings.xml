@@ -64,5 +64,7 @@
     <string name="admin">Administrator area</string>
     <string name="postal">Postal code</string>
     <string name="country">Country</string>
+    <string name="geocoder_connection_error">Connection error, not able to load address details.</string>
+    
 
 </resources>

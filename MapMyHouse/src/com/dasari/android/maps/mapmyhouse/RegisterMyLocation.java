@@ -1,16 +1,21 @@
 package com.dasari.android.maps.mapmyhouse;
 
 
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpParams;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-public class RegisterMyLocation extends Activity {
+import com.dasari.android.maps.mapmyhouse.httpconnection.HttpConnectionManager;
+import com.dasari.android.maps.mapmyhouse.httpconnection.HttpConnectionManager.IOResponseListener;
+
+public class RegisterMyLocation extends Activity implements IOResponseListener{
 
 	// Extra Constant for passing to register acitivity..
 	private static final String LOACL_DETAILS_PARCEL = "com.android.dasari.myLocalDetails";
@@ -30,6 +35,8 @@ public class RegisterMyLocation extends Activity {
 	// Constant extra value for UniqueKey.
 	private static final String UNIQUE_KEY = "unique_key";
 	
+	// Constant extra for total address.
+	private static final String MY_ADDRESS = "address";
 	// Constant extra value for locality.
 	private static final String LOCALITY = "locality";
 	
@@ -92,19 +99,28 @@ public class RegisterMyLocation extends Activity {
 	private String mCountryExtra;
 
 	private LocationDetails locDetails;
-	
 
+	private String postUrl = "http://www.google.com";
+	
+	// Response id for post connection.
+	private static final int POST_REQUEST_ID = 216;
+
+	// http params to pass.
+	private HttpParams mParams;
+
+
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_register_my_location);
 		Intent localIntent = getIntent();
-		locDetails = localIntent.getParcelableExtra(LOACL_DETAILS_PARCEL);
+		locDetails = (LocationDetails)localIntent.getParcelableExtra(LOACL_DETAILS_PARCEL);
 		mMyLatitude = locDetails.getLatitude();
 		mMyLongtitude = locDetails.getLongitude();
 		mMyUniqueKey = locDetails.getUniqueKey();
-		mLocalityExtra = locDetails.getLocality();
 		mAdminExtra = locDetails.getAdmin();
+		mLocalityExtra = locDetails.getLocality();
 		mPostalCodeExtra = locDetails.getPostalCode();
 		mCountryExtra = locDetails.getCountry();
 		initView();
@@ -112,8 +128,7 @@ public class RegisterMyLocation extends Activity {
 	}
 
 	private void initView(){
-		Log.v(TAG, "lat" + mMyLatitude + "  long  "+ mMyLongtitude);
-		
+	
 		mRootView = (RelativeLayout)findViewById(R.id.container);
 		
 		mLatitudeValue = (TextView)mRootView.findViewById(R.id.mylatitudevalue);
@@ -134,15 +149,45 @@ public class RegisterMyLocation extends Activity {
 			
 	}
 
-	public void okActivity(View v) {
+	public void onRegisterButtonClick(View v) {
+
+		String totalAddress = mAddress.getText().toString() + "\n" +
+		                      mAdmin.getText().toString() + "\n" +
+				              mLocality.getText().toString() + "\n" +
+		                      mPostalCode.getText().toString() + "\n" +
+				              mCountry.getText().toString();
+		mParams = new BasicHttpParams();
+		mParams.setParameter(LATITUDE, mLatitudeValue.getText().toString());
+		mParams.setParameter(LONGITUDE, mLongitudeValue.getText().toString());
+		mParams.setParameter(UNIQUE_KEY, mUniqueString.getText().toString());
+		mParams.setParameter(MY_ADDRESS, totalAddress);
+		HttpConnectionManager.getInstance().makeRequest(RegisterMyLocation.this, postUrl ,HttpConnectionManager.REQUEST_TYPE.POST,
+				POST_REQUEST_ID , RegisterMyLocation.this, mParams);
+		
+	}
+	
+	public void onCancelButtonClick(View v) {
 
 		finish();
 		
 	}
-	
-	public void cancelActivity(View v) {
 
+	@Override
+	public void onResponseReceived(Object response, int requestID) {
+		// TODO Auto-generated method stub
 		finish();
+		
+	}
+
+	@Override
+	public void onExceptionReceived(Exception ex) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onNoInternetAceess() {
+		// TODO Auto-generated method stub
 		
 	}
 

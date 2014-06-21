@@ -11,6 +11,8 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 //import android.support.v7.app.ActionBarActivity;
@@ -32,6 +34,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class MainActivity extends Activity implements
 		OnMyLocationButtonClickListener, ILocationChangeListener, OnClickListener{
 
+	// Log tag
+	private static final String TAG = MainActivity.class.getCanonicalName();
 	
 	// Parcelable location details 
 	public LocationDetails myDetails;
@@ -52,10 +56,7 @@ public class MainActivity extends Activity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		MyLocationManager.getInstance().registerLocationListener(this);
-		MyLocationManager.getInstance().initialize(getApplicationContext());
-		
-		myDetails = new LocationDetails();
+
 		mGoogleMap = ((MapFragment) getFragmentManager().findFragmentById(
 				R.id.map)).getMap();
 		mGoogleMap.setOnMyLocationButtonClickListener(this);
@@ -128,9 +129,17 @@ public class MainActivity extends Activity implements
 	protected void onStart() {
 		// TODO Auto-generated method stub
 		super.onStart();
-		MyLocationManager.getInstance().connectToLocationService();
 	}
 	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		MyLocationManager.getInstance().registerLocationListener(this);
+		MyLocationManager.getInstance().initialize(getApplicationContext());
+		MyLocationManager.getInstance().connectToLocationService();
+
+		
+	};
 	@Override
 	protected void onStop() {
 		MyLocationManager.getInstance().stopPeriodicUpdates();
@@ -140,6 +149,7 @@ public class MainActivity extends Activity implements
 
 	@Override
 	public void onLocationChange(Location location) {
+		 myDetails = new LocationDetails();
 		 myDetails.setLatitude(location.getLatitude());
 		 myDetails.setLongitude(location.getLongitude());
 		 double localLat = myDetails.getLatitude();
@@ -148,6 +158,9 @@ public class MainActivity extends Activity implements
 		 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myloc, 13));
 		 mGoogleMap.addMarker(new MarkerOptions().title("My Location")
 		 .snippet("This is my location").position(myloc));
+		 //TODO random code.. generaiton.
+		 
+		 myDetails.setUniqueKey("rami99999");
 		 
          new DownlaodAddressFormLatLog().execute(localLat, localLong);
 //		 MyLocationDao myLocDao = new MyLocationDao();
@@ -163,10 +176,10 @@ public class MainActivity extends Activity implements
 	
 	}
 
-	private class DownlaodAddressFormLatLog extends AsyncTask<Double, Void, Void>{
+	private class DownlaodAddressFormLatLog extends AsyncTask<Double, Void, Boolean>{
 
 		@Override
-		protected Void doInBackground(Double... params) {
+		protected Boolean doInBackground(Double... params) {
 			 // Used to get the NEAREST address of the location pointed by
 			 // longitude and latitude.
 			 Geocoder myLoc = new Geocoder(MainActivity.this, Locale.getDefault());
@@ -182,17 +195,21 @@ public class MainActivity extends Activity implements
 					 }
 					    
 				 }
+		    return true;
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
+				Log.e(TAG, "IO exception at GeoCoder.. probably system error");
 				e.printStackTrace();
+				return false;
 			}
-			return null;
 			
 		}
 		
 		@Override
-		protected void onPostExecute(Void result) {
+		protected void onPostExecute(Boolean result) {
 			super.onPostExecute(result);
+			if (!result)
+				Toast.makeText(MainActivity.this, R.string.geocoder_connection_error, Toast.LENGTH_LONG).show();
 			mRegisterEnable = true;
 			invalidateOptionsMenu();
 		}
@@ -206,9 +223,10 @@ public class MainActivity extends Activity implements
 	 */
 	private void registerLocation() {
 		Intent registerLocation = new Intent(this, RegisterMyLocation.class);
-		Bundle bundle = new Bundle();
-		bundle.putParcelable(LOACL_DETAILS_PARCEL, myDetails);
-		registerLocation.putExtras(bundle);
+		//Bundle bundle = new Bundle();
+		//bundle.putParcelable(LOACL_DETAILS_PARCEL, myDetails);
+		registerLocation.putExtra(LOACL_DETAILS_PARCEL, (Parcelable)myDetails);
+		//registerLocation.putExtras(bundle);
 
 		startActivity(registerLocation);
 	}
