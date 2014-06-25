@@ -70,22 +70,12 @@ public class HttpPostAsyncTask extends AsyncTask<String, Integer, String> {
 
 			connection.connect();
 			
-			JSONObject jsonParams = new JSONObject();
-			jsonParams.put("latitude", mHttpParams.getParameter("latitude"));
-			jsonParams.put("longitude", mHttpParams.getParameter("longitude"));
-			jsonParams.put("unique_key", mHttpParams.getParameter("unique_key"));
-			jsonParams.put("address", mHttpParams.getParameter("address"));
-
-			output = new DataOutputStream(connection.getOutputStream());
-			output.writeBytes(jsonParams.toString());
+				output = new DataOutputStream(connection.getOutputStream());
+			output.writeBytes(mHttpParams.toString());
 			
 			return STATUS_SUCCESS;
 			
-		} catch (JSONException e) {
-			Log.e(TAG, "An JSON exception while post");
-			mResponseListener.onExceptionReceived(e);
-			return null;
-		} catch (MalformedURLException e1) {
+		}  catch (MalformedURLException e1) {
 			Log.e(TAG, "An Mal fromed Url exception while post");
 			mResponseListener.onExceptionReceived(e1);
 			return null;
