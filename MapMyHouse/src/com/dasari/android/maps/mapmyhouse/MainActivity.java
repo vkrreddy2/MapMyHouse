@@ -6,12 +6,13 @@ import java.util.Locale;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Geocoder;
 import android.location.Location;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -22,10 +23,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.SearchView;
 import android.widget.Toast;
 
+import com.dasari.android.maps.mapmyhouse.httpconnection.HttpConnectionManager;
+import com.dasari.android.maps.mapmyhouse.httpconnection.HttpConnectionManager.IOResponseListener;
+import com.dasari.android.maps.mapmyhouse.httpconnection.HttpConnectionManager.REQUEST_TYPE;
 import com.dasari.android.maps.mapmyhouse.location.MyLocationManager;
 import com.dasari.android.maps.mapmyhouse.location.MyLocationManager.ILocationChangeListener;
 import com.google.android.gms.common.ConnectionResult;
@@ -40,7 +44,8 @@ public class MainActivity extends Activity
 		implements
 			OnMyLocationButtonClickListener,
 			ILocationChangeListener,
-			OnClickListener {
+			OnClickListener,
+			IOResponseListener {
 
 	// Log tag
 	private static final String TAG = MainActivity.class.getCanonicalName();
@@ -52,10 +57,11 @@ public class MainActivity extends Activity
 	private static final String LOACL_DETAILS_PARCEL = "com.android.dasari.myLocalDetails";
 
 	private GoogleMap mGoogleMap;
-	private ImageView mNavigationButton;
 
 	private boolean mRegisterEnable;
 
+	private String mURLAll = "http://ibreddy.in/REST/MapMyHouse/GetAllData";
+	private String mURLOne = "http://ibreddy.in/REST/MapMyHouse/GetDataOfID?id=";
 	// private Location mCurrentLocation;
 	// LocationClient mLocationClient;
 
@@ -93,8 +99,6 @@ public class MainActivity extends Activity
 		rlp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
 		rlp.setMargins(0, 0, 30, 30);
 
-		mNavigationButton = (ImageView) findViewById(R.id.direction_button);
-		mNavigationButton.setOnClickListener(this);
 		/*
 		 * LatLng bangalore = new LatLng(12.971599, 77.594563);
 		 * mGoogleMap.setOnMyLocationButtonClickListener(this);
@@ -123,14 +127,27 @@ public class MainActivity extends Activity
 		// String lngMy = String.valueOf(loc.getLongitude());
 
 		// Toast.makeText(this, "Navigation", Toast.LENGTH_SHORT).show();
+
 	}
 
+	private void doSearch(String query) {
+		mURLOne += query;
+		HttpConnectionManager.getInstance().makeRequest(this, mURLOne,
+				REQUEST_TYPE.GET, 101, this, null);
+	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
+		// Associate searchable configuration with the SearchView
+		SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+		SearchView searchView = (SearchView) menu.findItem(R.id.search)
+				.getActionView();
+		searchView.setSearchableInfo(searchManager
+				.getSearchableInfo(getComponentName()));
+
+		return super.onCreateOptionsMenu(menu);
 	}
 
 	public boolean onPrepareOptionsMenu(Menu menu) {
@@ -289,14 +306,31 @@ public class MainActivity extends Activity
 
 	@Override
 	public void onClick(View v) {
-		switch (v.getId()) {
-			case R.id.direction_button :
+		// switch (v.getId()) {
+		// case R.id.direction_button :
+		//
+		// Intent navigation = new Intent(Intent.ACTION_VIEW);
+		// navigation.setData(Uri.parse("geo:0,0?q=12.927204,77.686455 ("
+		// + "My House" + ")"));
+		// startActivity(navigation);
+		//
+		// }
+	}
 
-				Intent navigation = new Intent(Intent.ACTION_VIEW);
-				navigation.setData(Uri.parse("geo:0,0?q=12.927204,77.686455 ("
-						+ "My House" + ")"));
-				startActivity(navigation);
-
+	@Override
+	public void onResponseReceived(Object response, int requestID) {
+		if (response != null) {
+			Log.v(TAG, response.toString());
 		}
+	}
+
+	@Override
+	public void onExceptionReceived(Exception ex) {
+		Log.v(TAG, ex.getMessage());
+	}
+
+	@Override
+	public void onNoInternetAceess() {
+		Log.v(TAG, "No Internet");
 	}
 }

@@ -1,7 +1,10 @@
 package com.dasari.android.maps.mapmyhouse.httpconnection;
 
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -10,13 +13,13 @@ import org.apache.http.params.HttpParams;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.dasari.android.maps.mapmyhouse.httpconnection.HttpConnectionManager.IOResponseListener;
-
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.util.Log;
+
+import com.dasari.android.maps.mapmyhouse.httpconnection.HttpConnectionManager.IOResponseListener;
 
 public class HttpPostAsyncTask extends AsyncTask<String, Integer, String> {
 
@@ -26,7 +29,8 @@ public class HttpPostAsyncTask extends AsyncTask<String, Integer, String> {
 	private int mRequestID = -1;
 	private static String STATUS_SUCCESS = "success";
 	private HttpParams mHttpParams = null;
-	public HttpPostAsyncTask(Context context, int requestID, IOResponseListener listener, HttpParams params) {
+	public HttpPostAsyncTask(Context context, int requestID,
+			IOResponseListener listener, HttpParams params) {
 		mContext = context;
 		mRequestID = requestID;
 		mResponseListener = listener;
@@ -59,23 +63,55 @@ public class HttpPostAsyncTask extends AsyncTask<String, Integer, String> {
 			String api = (String) params[0];
 
 			postUrl = new URL(api);
-			connection = (HttpURLConnection) postUrl
-					.openConnection();
+			connection = (HttpURLConnection) postUrl.openConnection();
 			connection.setRequestMethod("POST");
 			connection.setDoOutput(true);
+			connection.setDoInput(true);
 			// HTTP/1.0 may not support this function.
-			connection.setChunkedStreamingMode(0);
+			//connection.setChunkedStreamingMode(0);
+			//connection.setRequestProperty("Content-Lenght", "10");
 			connection.setUseCaches(false);
+			//connection.set
 			connection.setRequestProperty("content-type", "application/json");
-
 			connection.connect();
+			JSONObject jsonParams = new JSONObject();
+			jsonParams.put("latitude", mHttpParams.getParameter("latitude"));
+			jsonParams.put("longitude", mHttpParams.getParameter("longitude"));
+			jsonParams
+					.put("unique_key", mHttpParams.getParameter("unique_key"));
+			jsonParams.put("address", mHttpParams.getParameter("address"));
+			jsonParams.put("reserved_1", mHttpParams.getParameter("reserved_1"));
+
+			output = new DataOutputStream(connection.getOutputStream());
+			output.writeBytes(jsonParams.toString());
 			
-				output = new DataOutputStream(connection.getOutputStream());
-			output.writeBytes(mHttpParams.toString());
+			String status = ((HttpURLConnection) connection).getResponseMessage();
+			int value = ((HttpURLConnection) connection).getResponseCode();
+
+			InputStream customResponse;
+			if (value == 200){
+				customResponse = connection.getInputStream();
+			}else {
+				customResponse = connection.getErrorStream();
+			}
 			
-			return STATUS_SUCCESS;
-			
-		}  catch (MalformedURLException e1) {
+			BufferedReader resultBufferReader = new BufferedReader(new InputStreamReader(customResponse));
+			StringBuilder responseFromServer = new StringBuilder();
+			String Line;
+			if ((Line = resultBufferReader.readLine()) != null){
+				responseFromServer.append(Line);
+			}
+			Log.i(TAG, "" +status+ value + " from server    "+ responseFromServer);
+
+			//return STATUS_SUCCESS;
+			return status;
+
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+
+		} catch (MalformedURLException e1) {
 			Log.e(TAG, "An Mal fromed Url exception while post");
 			mResponseListener.onExceptionReceived(e1);
 			return null;
@@ -83,6 +119,7 @@ public class HttpPostAsyncTask extends AsyncTask<String, Integer, String> {
 			Log.e(TAG, "An Iu exception while post");
 			mResponseListener.onExceptionReceived(e2);
 			return null;
+
 		} finally {
 			if (connection != null)
 				connection.disconnect();
@@ -91,8 +128,7 @@ public class HttpPostAsyncTask extends AsyncTask<String, Integer, String> {
 	}
 	@Override
 	protected void onPostExecute(String result) {
-		if(result != null)
-		{
+		if (result != null) {
 			mResponseListener.onResponseReceived(result, mRequestID);
 		}
 	}

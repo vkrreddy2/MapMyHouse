@@ -14,13 +14,13 @@
         tools:ignore="MergeRootFrame" >
 
         <!--
-        <LinearLayout 
+        <LinearLayout
         android:layout_gravity="fill_horizontal">
-        <ImageView 
+        <ImageView
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:contentDescription="@string/location_image"
-            android:src="@drawable/abc_ic_go"/>
+            android:src="@drawable/abc_ic_go"/>
         -->
 
         <TextView
@@ -63,11 +63,18 @@
             android:layout_below="@id/mylongitudevalue"
             android:text="@string/unique_id" />
 
+        <EditText
+            android:id="@+id/myUniqueID"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/unique_id"
+            android:hint="Unique ID" />
+
         <TextView
             android:id="@+id/uniqueString"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/unique_id" />
+            android:layout_below="@id/myUniqueID" />
 
         <EditText
             android:id="@+id/myAddress"
@@ -117,8 +124,8 @@
             android:id="@+id/ok_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/myCountry"
             android:layout_alignParentRight="true"
+            android:layout_below="@id/myCountry"
             android:onClick="onRegisterButtonClick"
             android:text="@string/ok" />
     </RelativeLayout>

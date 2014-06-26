@@ -10,16 +10,4 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <LinearLayout
-        android:id="@+id/search_containers"
-        android:layout_width="match_parent"
-        android:layout_height="200dp" >
-
-        <ImageView
-            android:id="@+id/direction_button"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/ic_launcher" />
-    </LinearLayout>
-
 </FrameLayout>

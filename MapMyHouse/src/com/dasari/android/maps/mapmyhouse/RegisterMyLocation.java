@@ -69,7 +69,9 @@ public class RegisterMyLocation extends Activity implements IOResponseListener{
 	
 	// Unique value to display.
 	private TextView mUniqueString;
-
+	
+	private EditText mUniqueID;
+	
 	// Address value which user types in edit text.
 	private EditText mAddress;
 	
@@ -100,7 +102,7 @@ public class RegisterMyLocation extends Activity implements IOResponseListener{
 
 	private LocationDetails locDetails;
 
-	private String postUrl = "http://www.google.com";
+	private String postUrl = "http://ibreddy.in/REST/MapMyHouse/addMapData";
 	
 	// Response id for post connection.
 	private static final int POST_REQUEST_ID = 216;
@@ -108,7 +110,7 @@ public class RegisterMyLocation extends Activity implements IOResponseListener{
 	// http params to pass.
 	private HttpParams mParams;
 
-
+	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -131,12 +133,12 @@ public class RegisterMyLocation extends Activity implements IOResponseListener{
 	
 		mRootView = (RelativeLayout)findViewById(R.id.container);
 		
+		mUniqueID = (EditText)mRootView.findViewById(R.id.myUniqueID);
 		mLatitudeValue = (TextView)mRootView.findViewById(R.id.mylatitudevalue);
 		mLatitudeValue.setText(String.valueOf(mMyLatitude));
 		mLongitudeValue = (TextView)mRootView.findViewById(R.id.mylongitudevalue);
 		mLongitudeValue.setText(String.valueOf(mMyLongtitude));
 		mUniqueString = (TextView)mRootView.findViewById(R.id.uniqueString);
-		mUniqueString.setText(mMyUniqueKey);
 		mAddress = (EditText)mRootView.findViewById(R.id.myAddress);
 		mLocality = (EditText)mRootView.findViewById(R.id.myLocality);
 		mLocality.setText(mLocalityExtra);
@@ -159,8 +161,9 @@ public class RegisterMyLocation extends Activity implements IOResponseListener{
 		mParams = new BasicHttpParams();
 		mParams.setParameter(LATITUDE, mLatitudeValue.getText().toString());
 		mParams.setParameter(LONGITUDE, mLongitudeValue.getText().toString());
-		mParams.setParameter(UNIQUE_KEY, mUniqueString.getText().toString());
+		mParams.setParameter(UNIQUE_KEY, mUniqueID.getText().toString());
 		mParams.setParameter(MY_ADDRESS, totalAddress);
+		mParams.setParameter("reserved_1","Reserved");
 		HttpConnectionManager.getInstance().makeRequest(RegisterMyLocation.this, postUrl ,HttpConnectionManager.REQUEST_TYPE.POST,
 				POST_REQUEST_ID , RegisterMyLocation.this, mParams);
 		
