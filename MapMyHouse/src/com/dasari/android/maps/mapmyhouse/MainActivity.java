@@ -1,6 +1,7 @@
 package com.dasari.android.maps.mapmyhouse;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Locale;
 
@@ -25,8 +26,10 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
+import android.widget.SearchView.OnQueryTextListener;
 import android.widget.Toast;
 
+import com.dasari.android.maps.mapmyhouse.dao.MyLocationResponseDao;
 import com.dasari.android.maps.mapmyhouse.httpconnection.HttpConnectionManager;
 import com.dasari.android.maps.mapmyhouse.httpconnection.HttpConnectionManager.IOResponseListener;
 import com.dasari.android.maps.mapmyhouse.httpconnection.HttpConnectionManager.REQUEST_TYPE;
@@ -39,6 +42,9 @@ import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 public class MainActivity extends Activity
 		implements
@@ -59,7 +65,7 @@ public class MainActivity extends Activity
 	private GoogleMap mGoogleMap;
 
 	private boolean mRegisterEnable;
-
+	private boolean mNavigationEnable = false;
 	private String mURLAll = "http://ibreddy.in/REST/MapMyHouse/GetAllData";
 	private String mURLOne = "http://ibreddy.in/REST/MapMyHouse/GetDataOfID?id=";
 	// private Location mCurrentLocation;
@@ -131,12 +137,13 @@ public class MainActivity extends Activity
 	}
 
 	private void doSearch(String query) {
-		mURLOne += query;
-		HttpConnectionManager.getInstance().makeRequest(this, mURLOne,
+		String url = mURLOne + query;
+	//	String url = mURLAll;
+		HttpConnectionManager.getInstance().makeRequest(this, url,
 				REQUEST_TYPE.GET, 101, this, null);
 	}
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+	public boolean onCreateOptionsMenu(final Menu menu) {
 
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
@@ -146,13 +153,34 @@ public class MainActivity extends Activity
 				.getActionView();
 		searchView.setSearchableInfo(searchManager
 				.getSearchableInfo(getComponentName()));
-
+		searchView.setOnQueryTextListener(new OnQueryTextListener() {
+			
+			@Override
+			public boolean onQueryTextSubmit(String query) {
+		         MenuItem searchMenuItem = menu.findItem(R.id.search);
+		            if (searchMenuItem != null) {
+		                searchMenuItem.collapseActionView();
+		            }
+		            
+		            Log.v(TAG, query);
+		            doSearch(query);
+				return true;
+			}
+			
+			@Override
+			public boolean onQueryTextChange(String newText) {
+				Log.v(TAG, newText);
+				return true;
+			}
+		});
 		return super.onCreateOptionsMenu(menu);
 	}
 
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		MenuItem register = menu.findItem(R.id.register);
+		MenuItem navigation = menu.findItem(R.id.navigation);
 		register.setVisible(mRegisterEnable);
+		navigation.setVisible(mNavigationEnable);
 		return true;
 	}
 	@Override
@@ -164,6 +192,10 @@ public class MainActivity extends Activity
 		if (id == R.id.register) {
 			registerLocation();
 			return true;
+		}
+		if(item.getItemId() == R.id.navigation)
+		{
+			
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -316,11 +348,22 @@ public class MainActivity extends Activity
 		//
 		// }
 	}
-
+	
+	
 	@Override
 	public void onResponseReceived(Object response, int requestID) {
 		if (response != null) {
-			Log.v(TAG, response.toString());
+			Log.i(TAG, response.toString());
+			GsonBuilder gsonBuilder = new GsonBuilder();
+			Gson gson = gsonBuilder.create();
+			List<MyLocationResponseDao> list=null;
+			Type listType = new TypeToken<List<MyLocationResponseDao>>(){}.getType();
+			list = gson.fromJson(response.toString(),listType);
+			if(list != null && list.size() !=0)
+			{
+				Log.i(TAG, list.get(0).getMy_house_id());
+				moveToLocation(list.get(0));
+			}
 		}
 	}
 
@@ -332,5 +375,22 @@ public class MainActivity extends Activity
 	@Override
 	public void onNoInternetAceess() {
 		Log.v(TAG, "No Internet");
+	}
+	
+	private void moveToLocation(MyLocationResponseDao myLocationDao)
+	{
+		if(mGoogleMap != null)
+		{
+			mGoogleMap.clear();
+			double localLat = Double.parseDouble(myLocationDao.getMy_house_latitude());
+			double localLong = Double.parseDouble(myLocationDao.getMy_house_longitude());
+			LatLng myloc = new LatLng(localLat, localLong);
+			mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myloc, 15));
+			mGoogleMap.addMarker(new MarkerOptions().title(myLocationDao.getMy_house_id())
+					.snippet(myLocationDao.getMy_house_address()).position(myloc));
+			mNavigationEnable = true;
+			invalidateOptionsMenu();
+
+		}
 	}
 }

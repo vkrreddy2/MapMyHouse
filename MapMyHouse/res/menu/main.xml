@@ -15,5 +15,12 @@
         android:orderInCategory="200"
         android:showAsAction="collapseActionView|ifRoom"
         android:title="@string/search"/>
+    <item
+        android:id="@+id/navigation"
+        android:icon="@drawable/images"
+        android:orderInCategory="300"
+        android:showAsAction="always"
+        android:title="@string/navigation"/>
+    
 
 </menu>

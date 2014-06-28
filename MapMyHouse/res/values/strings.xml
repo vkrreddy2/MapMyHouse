@@ -67,5 +67,6 @@
     <string name="geocoder_connection_error">Connection error, not able to load address details.</string>
     <string name="search">Search</string>
     <string name="search_hint">enter MMH id or Ph#</string>
+    <string name="navigation">Navigation</string>
 
 </resources>
