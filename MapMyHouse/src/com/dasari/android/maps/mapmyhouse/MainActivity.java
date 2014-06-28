@@ -14,6 +14,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Geocoder;
 import android.location.Location;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -58,7 +59,7 @@ public class MainActivity extends Activity
 
 	// Parcelable location details
 	public LocationDetails myDetails;
-
+	private MyLocationResponseDao mLocationResponse;
 	// Extra Constant for passing to register acitivity..
 	private static final String LOACL_DETAILS_PARCEL = "com.android.dasari.myLocalDetails";
 
@@ -195,7 +196,11 @@ public class MainActivity extends Activity
 		}
 		if(item.getItemId() == R.id.navigation)
 		{
-			
+			 Intent navigation = new Intent(Intent.ACTION_VIEW);
+			 navigation.setData(Uri.parse("geo:0,0?q=" + mLocationResponse.getMy_house_latitude()+ "," + mLocationResponse.getMy_house_longitude() + "("
+			 + mLocationResponse.getMy_house_address() + ")"));
+			 startActivity(navigation);
+
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -385,10 +390,11 @@ public class MainActivity extends Activity
 			double localLat = Double.parseDouble(myLocationDao.getMy_house_latitude());
 			double localLong = Double.parseDouble(myLocationDao.getMy_house_longitude());
 			LatLng myloc = new LatLng(localLat, localLong);
-			mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myloc, 15));
+			mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myloc, 13));
 			mGoogleMap.addMarker(new MarkerOptions().title(myLocationDao.getMy_house_id())
 					.snippet(myLocationDao.getMy_house_address()).position(myloc));
 			mNavigationEnable = true;
+			mLocationResponse = myLocationDao;
 			invalidateOptionsMenu();
 
 		}
