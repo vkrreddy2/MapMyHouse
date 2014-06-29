@@ -21,6 +21,10 @@
         android:orderInCategory="300"
         android:showAsAction="always"
         android:title="@string/navigation"/>
-    
+        <item
+        android:id="@+id/Search_phone_number"
+        android:orderInCategory="400"
+        android:showAsAction="ifRoom"
+        android:title="@string/search_by_phone_number"/>
 
 </menu>

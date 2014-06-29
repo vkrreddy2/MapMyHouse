@@ -7,6 +7,14 @@ public class MyLocationResponseDao {
 	private String my_house_address;
 	private String updatetime;
 	private String reserved_1;
+	private String phoneNumber;
+	
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
 	public String getMy_house_id() {
 		return my_house_id;
 	}

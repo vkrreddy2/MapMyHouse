@@ -35,6 +35,9 @@ public class RegisterMyLocation extends Activity implements IOResponseListener{
 	// Constant extra value for UniqueKey.
 	private static final String UNIQUE_KEY = "unique_key";
 	
+	// Constant extra for phonenumber.
+	private static final String PHONE_NUMBER = "phoneNumber";
+	
 	// Constant extra for total address.
 	private static final String MY_ADDRESS = "address";
 	// Constant extra value for locality.
@@ -87,6 +90,8 @@ public class RegisterMyLocation extends Activity implements IOResponseListener{
 	// Country from Lat Lon.
 	private EditText mCountry;
 	
+	// Phone number.
+	private EditText mPhoneNumber;
 	
 	
 	// Root view for this layout.
@@ -148,7 +153,9 @@ public class RegisterMyLocation extends Activity implements IOResponseListener{
 		mPostalCode.setText(mPostalCodeExtra);
 		mCountry = (EditText)mRootView.findViewById(R.id.myCountry);
 		mCountry.setText(mCountryExtra);
-			
+		
+		// Phone number view.
+	    mPhoneNumber = (EditText)mRootView.findViewById(R.id.myPhone_number);
 	}
 
 	public void onRegisterButtonClick(View v) {
@@ -164,6 +171,7 @@ public class RegisterMyLocation extends Activity implements IOResponseListener{
 		mParams.setParameter(UNIQUE_KEY, mUniqueID.getText().toString());
 		mParams.setParameter(MY_ADDRESS, totalAddress);
 		mParams.setParameter("reserved_1","Reserved");
+		mParams.setParameter(PHONE_NUMBER, mPhoneNumber.getText().toString());
 		HttpConnectionManager.getInstance().makeRequest(RegisterMyLocation.this, postUrl ,HttpConnectionManager.REQUEST_TYPE.POST,
 				POST_REQUEST_ID , RegisterMyLocation.this, mParams);
 		

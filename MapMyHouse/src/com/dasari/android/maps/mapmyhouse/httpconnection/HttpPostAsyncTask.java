@@ -80,6 +80,7 @@ public class HttpPostAsyncTask extends AsyncTask<String, Integer, String> {
 			jsonParams
 					.put("unique_key", mHttpParams.getParameter("unique_key"));
 			jsonParams.put("address", mHttpParams.getParameter("address"));
+			jsonParams.put("phoneNumber", mHttpParams.getParameter("phoneNumber"));
 			jsonParams.put("reserved_1", mHttpParams.getParameter("reserved_1"));
 
 			output = new DataOutputStream(connection.getOutputStream());

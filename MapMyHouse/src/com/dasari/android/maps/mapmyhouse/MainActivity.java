@@ -1,6 +1,7 @@
 package com.dasari.android.maps.mapmyhouse;
 
 import java.io.IOException;
+import java.lang.Character.UnicodeBlock;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Locale;
@@ -10,6 +11,7 @@ import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Geocoder;
@@ -18,6 +20,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.provider.ContactsContract.CommonDataKinds;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -63,14 +66,27 @@ public class MainActivity extends Activity
 	// Extra Constant for passing to register acitivity..
 	private static final String LOACL_DETAILS_PARCEL = "com.android.dasari.myLocalDetails";
 
+	private static final int REQUEST_SELECT_PHONE_NUMBER = 286;
+	
+	// Number U==7, N==6, I==8 by keyboard format.	
+	private static final int QUERY_BY_UNIQUE_ID = 768;
+	
+	// Number P==10, H==6, O==9;
+	private static final int QUERY_BY_PHONE_NUMBER = 1069;
+
 	private GoogleMap mGoogleMap;
 
-	private boolean mRegisterEnable;
+	private boolean mRegisterEnable = true;
 	private boolean mNavigationEnable = false;
 	private String mURLAll = "http://ibreddy.in/REST/MapMyHouse/GetAllData";
-	private String mURLOne = "http://ibreddy.in/REST/MapMyHouse/GetDataOfID?id=";
+	private String mURLUni = "http://ibreddy.in/REST/MapMyHouse/GetDataOfID?id=";
+	private String mURLPho = "http://ibreddy.in/REST/MapMyHouse/GetDataByPh?ph=";
+
 	// private Location mCurrentLocation;
 	// LocationClient mLocationClient;
+
+	private MenuItem mRegister;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -137,8 +153,17 @@ public class MainActivity extends Activity
 
 	}
 
-	private void doSearch(String query) {
-		String url = mURLOne + query;
+	private void doSearch(String query, int searchBy) {
+		String url = null;
+		if (searchBy == QUERY_BY_UNIQUE_ID){
+			 url = mURLUni + query;
+		} else if (searchBy == QUERY_BY_PHONE_NUMBER){
+			url = mURLPho + query;
+		} else {
+			// U should never reach here. Because we query by either phone or Unique id.
+			Toast.makeText(this, R.string.wrong_query, Toast.LENGTH_LONG).show();
+			return;
+		}
 	//	String url = mURLAll;
 		HttpConnectionManager.getInstance().makeRequest(this, url,
 				REQUEST_TYPE.GET, 101, this, null);
@@ -149,13 +174,16 @@ public class MainActivity extends Activity
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		// Associate searchable configuration with the SearchView
+		mRegister = menu.findItem(R.id.register);
+        mRegister.setEnabled(mRegisterEnable);
+       // mRegister.
 		SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
 		SearchView searchView = (SearchView) menu.findItem(R.id.search)
 				.getActionView();
 		searchView.setSearchableInfo(searchManager
 				.getSearchableInfo(getComponentName()));
 		searchView.setOnQueryTextListener(new OnQueryTextListener() {
-			
+
 			@Override
 			public boolean onQueryTextSubmit(String query) {
 		         MenuItem searchMenuItem = menu.findItem(R.id.search);
@@ -164,10 +192,10 @@ public class MainActivity extends Activity
 		            }
 		            
 		            Log.v(TAG, query);
-		            doSearch(query);
+		            doSearch(query, QUERY_BY_UNIQUE_ID);
 				return true;
 			}
-			
+
 			@Override
 			public boolean onQueryTextChange(String newText) {
 				Log.v(TAG, newText);
@@ -178,9 +206,9 @@ public class MainActivity extends Activity
 	}
 
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		MenuItem register = menu.findItem(R.id.register);
+		mRegister = menu.findItem(R.id.register);
 		MenuItem navigation = menu.findItem(R.id.navigation);
-		register.setVisible(mRegisterEnable);
+		mRegister.setEnabled(mRegisterEnable);
 		navigation.setVisible(mNavigationEnable);
 		return true;
 	}
@@ -192,18 +220,49 @@ public class MainActivity extends Activity
 		int id = item.getItemId();
 		if (id == R.id.register) {
 			registerLocation();
-			return true;
+			//return true;
 		}
-		if(item.getItemId() == R.id.navigation)
+		else if(id == R.id.navigation)
 		{
 			 Intent navigation = new Intent(Intent.ACTION_VIEW);
-			 navigation.setData(Uri.parse("geo:0,0?q=" + mLocationResponse.getMy_house_latitude()+ "," + mLocationResponse.getMy_house_longitude() + "("
-			 + mLocationResponse.getMy_house_address() + ")"));
-			 startActivity(navigation);
+			 			 navigation.setData(Uri.parse("geo:0,0?q=" + mLocationResponse.getMy_house_latitude()+ "," + mLocationResponse.getMy_house_longitude() + "("
+			 			 + mLocationResponse.getMy_house_address() + ")"));
+			 			 startActivity(navigation);			
+		}else if (id == R.id.Search_phone_number){
+			selectContactPhoneNumber();
+
 
 		}
 		return super.onOptionsItemSelected(item);
 	}
+	
+	public void selectContactPhoneNumber() {
+	    // Start an activity for the user to pick a phone number from contacts
+	    Intent intent = new Intent(Intent.ACTION_PICK);
+	    intent.setType(CommonDataKinds.Phone.CONTENT_TYPE);
+	    if (intent.resolveActivity(getPackageManager()) != null) {
+	        startActivityForResult(intent, REQUEST_SELECT_PHONE_NUMBER);
+	    }
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+	    if (requestCode == REQUEST_SELECT_PHONE_NUMBER && resultCode == RESULT_OK) {
+	        // Get the URI and query the content provider for the phone number
+	        Uri contactUri = data.getData();
+	        String[] projection = new String[]{CommonDataKinds.Phone.NUMBER};
+	        Cursor cursor = getContentResolver().query(contactUri, projection,
+	                null, null, null);
+	        // If the cursor returned is valid, get the phone number
+	        if (cursor != null && cursor.moveToFirst()) {
+	            int numberIndex = cursor.getColumnIndex(CommonDataKinds.Phone.NUMBER);
+	            String number = cursor.getString(numberIndex);
+	            Log.i("rami", "phone nmber        "  +number );
+	            doSearch(number, QUERY_BY_PHONE_NUMBER);
+	        }
+	    }
+	}
+	
 	@Override
 	public boolean onMyLocationButtonClick() {
 		MyLocationManager.getInstance().getLocation(getApplicationContext());
@@ -233,6 +292,7 @@ public class MainActivity extends Activity
 
 	@Override
 	public void onLocationChange(Location location) {
+		Log.i("rami", "in main acitvity-- onLocationcahnge");
 		myDetails = new LocationDetails();
 		myDetails.setLatitude(location.getLatitude());
 		myDetails.setLongitude(location.getLongitude());
@@ -357,7 +417,9 @@ public class MainActivity extends Activity
 	
 	@Override
 	public void onResponseReceived(Object response, int requestID) {
+		Log.i("rami", "in get respone");
 		if (response != null) {
+			Log.i("rami", "in respose != null");
 			Log.i(TAG, response.toString());
 			GsonBuilder gsonBuilder = new GsonBuilder();
 			Gson gson = gsonBuilder.create();
@@ -367,6 +429,7 @@ public class MainActivity extends Activity
 			if(list != null && list.size() !=0)
 			{
 				Log.i(TAG, list.get(0).getMy_house_id());
+				Log.i("rami",list.get(0).getPhoneNumber() );
 				moveToLocation(list.get(0));
 			}
 		}

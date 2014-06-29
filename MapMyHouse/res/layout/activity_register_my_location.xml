@@ -13,15 +13,7 @@
         tools:context="com.dasari.android.maps.mapmyhouse.RegisterMyLocation"
         tools:ignore="MergeRootFrame" >
 
-        <!--
-        <LinearLayout
-        android:layout_gravity="fill_horizontal">
-        <ImageView
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:contentDescription="@string/location_image"
-            android:src="@drawable/abc_ic_go"/>
-        -->
+
 
         <TextView
             android:id="@+id/InnerHeading"
@@ -75,12 +67,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/myUniqueID" />
+        
+        <EditText
+            android:id="@+id/myPhone_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/uniqueString"
+            android:inputType="phone"
+            android:hint="@string/phone_number" />
 
         <EditText
             android:id="@+id/myAddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/uniqueString"
+            android:layout_below="@id/myPhone_number"
             android:hint="@string/enter_address"
             android:maxLines="4" />
 

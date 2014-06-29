@@ -54,6 +54,8 @@ public class MyLocationManager implements LocationListener,
 	 */
 	boolean mUpdatesRequested = false;
 
+	private Context mContext;
+
 	public static MyLocationManager getInstance() {
 		if (mLocationManager == null) {
 			mLocationManager = new MyLocationManager();
@@ -63,6 +65,7 @@ public class MyLocationManager implements LocationListener,
 	}
 
 	public void initialize(Context context) {
+		mContext = context;
 		mLocationRequest = LocationRequest.create();
 
 		/*
@@ -115,6 +118,11 @@ public class MyLocationManager implements LocationListener,
         {
         	mLocationListener.onServiceConnected(args);
         }
+        // This is added to directly Zoom to users location
+        // once the app opens, insted clicking on the gps icon.
+        getLocation(mContext);
+        
+        
 	}
 
 	@Override
@@ -144,7 +152,6 @@ public class MyLocationManager implements LocationListener,
      * @param context The view object associated with this method, in this case a Button.
      */
     public void getLocation(Context context) {
-
         // If Google Play Services is available
         if (servicesConnected(context)) {
 

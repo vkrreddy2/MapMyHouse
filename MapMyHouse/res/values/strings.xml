@@ -68,5 +68,8 @@
     <string name="search">Search</string>
     <string name="search_hint">enter MMH id or Ph#</string>
     <string name="navigation">Navigation</string>
+    <string name="search_by_phone_number">Search by Phone number</string>
+    <string name="wrong_query">Search by wrong ID</string>
+    <string name="phone_number">Phone number</string>
 
 </resources>
