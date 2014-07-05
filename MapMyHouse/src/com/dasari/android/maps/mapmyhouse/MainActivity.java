@@ -91,15 +91,15 @@ public class MainActivity extends Activity
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
+//		getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
 		setContentView(R.layout.activity_main);
 
-		ActionBar actionBar = getActionBar();
-		actionBar.setBackgroundDrawable(new ColorDrawable(Color
-				.parseColor("#90000000")));
-		actionBar.setStackedBackgroundDrawable(new ColorDrawable(Color
-				.parseColor("#80000000")));
-
+//		ActionBar actionBar = getActionBar();
+//		actionBar.setBackgroundDrawable(new ColorDrawable(Color
+//				.parseColor("#90000000")));
+//		actionBar.setStackedBackgroundDrawable(new ColorDrawable(Color
+//				.parseColor("#80000000")));
+		getActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.action_bar));
 		MyLocationManager.getInstance().registerLocationListener(this);
 		MyLocationManager.getInstance().initialize(getApplicationContext());
 
@@ -115,12 +115,12 @@ public class MainActivity extends Activity
 				.findViewById(2);
 
 		// and next place it, for exemple, on bottom right (as Google Maps app)
-		RelativeLayout.LayoutParams rlp = (RelativeLayout.LayoutParams) locationButton
-				.getLayoutParams();
-		// position on right bottom
-		rlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
-		rlp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
-		rlp.setMargins(0, 0, 30, 30);
+//		RelativeLayout.LayoutParams rlp = (RelativeLayout.LayoutParams) locationButton
+//				.getLayoutParams();
+//		// position on right bottom
+//		rlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
+//		rlp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+//		rlp.setMargins(0, 0, 30, 30);
 
 		/*
 		 * LatLng bangalore = new LatLng(12.971599, 77.594563);

@@ -4,9 +4,16 @@
     tools:context="com.dasari.android.maps.mapmyhouse.RegisterMyLocation" >
 
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/action_cancel"
+        android:icon="@drawable/ic_action_cancel"
         android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never"/>
+        android:showAsAction="always"
+        android:title="@string/cancel"/>
+    <item
+        android:id="@+id/action_save"
+        android:icon="@drawable/ic_action_accept"
+        android:orderInCategory="200"
+        android:showAsAction="always"
+        android:title="@string/save"/>
 
 </menu>

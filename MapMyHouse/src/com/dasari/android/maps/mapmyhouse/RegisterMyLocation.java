@@ -7,9 +7,11 @@ import org.apache.http.params.HttpParams;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.dasari.android.maps.mapmyhouse.httpconnection.HttpConnectionManager;
@@ -130,20 +132,22 @@ public class RegisterMyLocation extends Activity implements IOResponseListener{
 		mLocalityExtra = locDetails.getLocality();
 		mPostalCodeExtra = locDetails.getPostalCode();
 		mCountryExtra = locDetails.getCountry();
+		getActionBar().setTitle(R.string.register_location);
+		getActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.action_bar));
 		initView();
 
 	}
 
 	private void initView(){
 	
-		mRootView = (RelativeLayout)findViewById(R.id.container);
+		mRootView = (LinearLayout)findViewById(R.id.root_view);
 		
 		mUniqueID = (EditText)mRootView.findViewById(R.id.myUniqueID);
 		mLatitudeValue = (TextView)mRootView.findViewById(R.id.mylatitudevalue);
 		mLatitudeValue.setText(String.valueOf(mMyLatitude));
 		mLongitudeValue = (TextView)mRootView.findViewById(R.id.mylongitudevalue);
 		mLongitudeValue.setText(String.valueOf(mMyLongtitude));
-		mUniqueString = (TextView)mRootView.findViewById(R.id.uniqueString);
+		mUniqueString = (TextView)mRootView.findViewById(R.id.myUniqueID);
 		mAddress = (EditText)mRootView.findViewById(R.id.myAddress);
 		mLocality = (EditText)mRootView.findViewById(R.id.myLocality);
 		mLocality.setText(mLocalityExtra);
@@ -158,7 +162,26 @@ public class RegisterMyLocation extends Activity implements IOResponseListener{
 	    mPhoneNumber = (EditText)mRootView.findViewById(R.id.myPhone_number);
 	}
 
-	public void onRegisterButtonClick(View v) {
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.register_my_location, menu);
+		return super.onCreateOptionsMenu(menu);
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case R.id.action_cancel :
+				finish();
+				break;
+			case R.id.action_save :
+				registerLocation();
+			default :
+				break;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+	public void registerLocation() {
 
 		String totalAddress = mAddress.getText().toString() + "\n" +
 		                      mAdmin.getText().toString() + "\n" +
@@ -177,12 +200,6 @@ public class RegisterMyLocation extends Activity implements IOResponseListener{
 		
 	}
 	
-	public void onCancelButtonClick(View v) {
-
-		finish();
-		
-	}
-
 	@Override
 	public void onResponseReceived(Object response, int requestID) {
 		// TODO Auto-generated method stub

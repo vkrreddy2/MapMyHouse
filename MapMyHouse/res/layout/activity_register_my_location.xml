@@ -4,130 +4,201 @@
     android:layout_height="fill_parent"
     android:fillViewport="true" >
 
-    <RelativeLayout
-        android:id="@+id/container"
-        android:layout_width="fill_parent"
+    <LinearLayout
+        android:id="@+id/root_view"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        tools:context="com.dasari.android.maps.mapmyhouse.RegisterMyLocation"
-        tools:ignore="MergeRootFrame" >
+        android:orientation="vertical" >
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp" >
 
+            <TextView
+                android:id="@+id/mylatitude"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="20dp"
+                android:gravity="center_horizontal"
+                android:text="@string/latitude"
+                android:textSize="17sp" />
+
+            <TextView
+                android:id="@+id/view1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="20dp"
+                android:layout_toRightOf="@+id/mylatitude"
+                android:text=":"
+                android:textSize="17sp" />
+
+            <TextView
+                android:id="@+id/mylatitudevalue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="20dp"
+                android:layout_toRightOf="@+id/view1"
+                android:textSize="17sp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp" >
+
+            <TextView
+                android:id="@+id/mylongitude"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:gravity="center_horizontal"
+                android:text="@string/longitude"
+                android:textSize="17sp" />
+
+            <TextView
+                android:id="@+id/view2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="20dp"
+                android:layout_toRightOf="@+id/mylongitude"
+                android:text=":"
+                android:textSize="17sp" />
+
+            <TextView
+                android:id="@+id/mylongitudevalue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="20dp"
+                android:layout_toRightOf="@+id/view2"
+                android:textSize="17sp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp" >
+
+            <TextView
+                android:id="@+id/unique_id"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="20dp"
+                android:gravity="center_horizontal"
+                android:text="@string/unique_id"
+                android:textSize="17sp" />
+
+            <TextView
+                android:id="@+id/view3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="20dp"
+                android:layout_toRightOf="@+id/unique_id"
+                android:text=":"
+                android:textSize="17sp" />
+
+            <EditText
+                android:id="@+id/myUniqueID"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/view3" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp" >
+
+            <TextView
+                android:id="@+id/phone_no"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="20dp"
+                android:gravity="center_horizontal"
+                android:text="@string/phone_number"
+                android:textSize="17sp" />
+
+            <TextView
+                android:id="@+id/view4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="20dp"
+                android:layout_toRightOf="@+id/phone_no"
+                android:text=":"
+                android:textSize="17sp" />
+
+            <EditText
+                android:id="@+id/myPhone_number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/edit_text_selector"
+                android:layout_toRightOf="@+id/view4"
+                android:inputType="phone" />
+        </RelativeLayout>
 
         <TextView
-            android:id="@+id/InnerHeading"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/abc_ic_go"
-            android:text="@string/location_details" />
+            android:layout_marginLeft="20dp"
+            android:gravity="left"
+            android:layout_marginTop="10dp"
+            android:text="@string/my_address_details"
+            android:textSize="17sp" />
 
-        <TextView
-            android:id="@+id/mylatitude"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/InnerHeading"
-            android:text="@string/latitude" />
+            android:layout_marginTop="10dp" >
 
-        <TextView
-            android:id="@+id/mylatitudevalue"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/mylatitude" />
+            <EditText
+                android:id="@+id/myAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/enter_address"
+                android:maxLines="4" />
 
-        <TextView
-            android:id="@+id/mylongitude"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/mylatitudevalue"
-            android:text="@string/longitude" />
+            <EditText
+                android:id="@+id/myLocality"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/myAddress"
+                android:hint="@string/locality" />
 
-        <TextView
-            android:id="@+id/mylongitudevalue"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/mylongitude" />
+            <EditText
+                android:id="@+id/myAdminArea"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/myLocality"
+                android:hint="@string/admin" />
 
-        <TextView
-            android:id="@+id/unique_id"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/mylongitudevalue"
-            android:text="@string/unique_id" />
+            <EditText
+                android:id="@+id/myPostalCode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/myAdminArea"
+                android:hint="@string/postal" />
 
-        <EditText
-            android:id="@+id/myUniqueID"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/unique_id"
-            android:hint="Unique ID" />
-
-        <TextView
-            android:id="@+id/uniqueString"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/myUniqueID" />
-        
-        <EditText
-            android:id="@+id/myPhone_number"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/uniqueString"
-            android:inputType="phone"
-            android:hint="@string/phone_number" />
-
-        <EditText
-            android:id="@+id/myAddress"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/myPhone_number"
-            android:hint="@string/enter_address"
-            android:maxLines="4" />
-
-        <EditText
-            android:id="@+id/myLocality"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/myAddress"
-            android:hint="@string/locality" />
-
-        <EditText
-            android:id="@+id/myAdminArea"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/myLocality"
-            android:hint="@string/admin" />
-
-        <EditText
-            android:id="@+id/myPostalCode"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/myAdminArea"
-            android:hint="@string/postal" />
-
-        <EditText
-            android:id="@+id/myCountry"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/myPostalCode"
-            android:hint="@string/country" />
-
-        <Button
-            android:id="@+id/cancel_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/myCountry"
-            android:onClick="onCancelButtonClick"
-            android:text="@string/cancel" />
-
-        <Button
-            android:id="@+id/ok_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_below="@id/myCountry"
-            android:onClick="onRegisterButtonClick"
-            android:text="@string/ok" />
-    </RelativeLayout>
+            <EditText
+                android:id="@+id/myCountry"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/myPostalCode"
+                android:hint="@string/country" />
+        </RelativeLayout>
+    </LinearLayout>
 
 </ScrollView>

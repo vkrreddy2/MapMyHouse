@@ -71,5 +71,8 @@
     <string name="search_by_phone_number">Search by Phone number</string>
     <string name="wrong_query">Search by wrong ID</string>
     <string name="phone_number">Phone number</string>
+    <string name="my_address_details">Address Details</string>
+    <string name="register_location">Register Location</string>
+    <string name="save">Save</string>
 
 </resources>
