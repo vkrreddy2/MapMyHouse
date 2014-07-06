@@ -74,5 +74,10 @@
     <string name="my_address_details">Address Details</string>
     <string name="register_location">Register Location</string>
     <string name="save">Save</string>
+    <string name="post_progress_title">Posting to server</string>
+    <string name="post_progress_message">Registering...</string>
+    <string name="unsucessfull_register">Registeration not successful</string>
+    <string name="sucessfull_register">successfully registered</string>
+    
 
 </resources>

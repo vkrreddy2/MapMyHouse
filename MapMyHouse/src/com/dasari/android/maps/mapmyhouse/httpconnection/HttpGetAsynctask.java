@@ -11,6 +11,7 @@ import com.dasari.android.maps.mapmyhouse.httpconnection.HttpConnectionManager.I
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
+import android.util.Log;
 
 public class HttpGetAsynctask extends AsyncTask<String, Void, String> {
 
@@ -50,8 +51,10 @@ public class HttpGetAsynctask extends AsyncTask<String, Void, String> {
 			while ((data = reader.readLine()) != null) {
 				response += data + "\n";
 			}
+			Log.i("rami", "in back..  "+ response);
 			return response;
 		} catch (Exception e) {
+			Log.i("rami", " in exception");
 			mResponseListener.onExceptionReceived(e);
 			return null;
 		}finally {
@@ -63,6 +66,7 @@ public class HttpGetAsynctask extends AsyncTask<String, Void, String> {
 	@Override
 	protected void onPostExecute(String response) {
 		if (response != null) {
+			Log.i("rami", "in postexcute... res  "+ response);
 			mResponseListener.onResponseReceived(response, mRequestID);
 		}
 	}

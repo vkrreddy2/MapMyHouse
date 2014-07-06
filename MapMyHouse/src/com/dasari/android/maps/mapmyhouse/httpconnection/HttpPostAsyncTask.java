@@ -13,12 +13,14 @@ import org.apache.http.params.HttpParams;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.dasari.android.maps.mapmyhouse.R;
 import com.dasari.android.maps.mapmyhouse.httpconnection.HttpConnectionManager.IOResponseListener;
 
 public class HttpPostAsyncTask extends AsyncTask<String, Integer, String> {
@@ -27,8 +29,8 @@ public class HttpPostAsyncTask extends AsyncTask<String, Integer, String> {
 	private IOResponseListener mResponseListener = null;
 	private Context mContext = null;
 	private int mRequestID = -1;
-	private static String STATUS_SUCCESS = "success";
 	private HttpParams mHttpParams = null;
+	private ProgressDialog mProgressDialog;
 	public HttpPostAsyncTask(Context context, int requestID,
 			IOResponseListener listener, HttpParams params) {
 		mContext = context;
@@ -36,9 +38,11 @@ public class HttpPostAsyncTask extends AsyncTask<String, Integer, String> {
 		mResponseListener = listener;
 		mHttpParams = params;
 	}
+
 	@Override
 	protected void onPreExecute() {
 		checkDataConnectivity();
+		mProgressDialog = ProgressDialog.show(mContext, mContext.getResources().getString(R.string.post_progress_title), mContext.getResources().getString(R.string.post_progress_message),true);
 	}
 
 	private void checkDataConnectivity() {
@@ -105,7 +109,7 @@ public class HttpPostAsyncTask extends AsyncTask<String, Integer, String> {
 			Log.i(TAG, "" +status+ value + " from server    "+ responseFromServer);
 
 			//return STATUS_SUCCESS;
-			return status;
+			return responseFromServer.toString();
 
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
@@ -129,6 +133,7 @@ public class HttpPostAsyncTask extends AsyncTask<String, Integer, String> {
 	}
 	@Override
 	protected void onPostExecute(String result) {
+		mProgressDialog.dismiss();
 		if (result != null) {
 			mResponseListener.onResponseReceived(result, mRequestID);
 		}

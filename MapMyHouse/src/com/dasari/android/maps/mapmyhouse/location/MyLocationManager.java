@@ -83,11 +83,6 @@ public class MyLocationManager implements LocationListener,
 
 		// Note that location updates are off until the user turns them on
 		mUpdatesRequested = false;
-		mPrefs = context.getSharedPreferences(LocationUtils.SHARED_PREFERENCES,
-				Context.MODE_PRIVATE);
-
-		// Get an editor
-		mEditor = mPrefs.edit();
 
 		/*
 		 * Create a new location client, using the enclosing class to handle

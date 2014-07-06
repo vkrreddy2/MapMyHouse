@@ -29,8 +29,6 @@ public final class LocationUtils {
 	// Debugging tag for the application
 	public static final String APPTAG = "LocationSample";
 
-	// Name of shared preferences repository that stores persistent state
-	public static final String SHARED_PREFERENCES = "com.example.android.location.SHARED_PREFERENCES";
 
 	// Key for storing the "updates requested" flag in shared preferences
 	public static final String KEY_UPDATES_REQUESTED = "com.example.android.location.KEY_UPDATES_REQUESTED";

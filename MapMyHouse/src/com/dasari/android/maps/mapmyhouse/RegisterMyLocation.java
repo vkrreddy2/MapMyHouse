@@ -4,15 +4,19 @@ package com.dasari.android.maps.mapmyhouse;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.dasari.android.maps.mapmyhouse.httpconnection.HttpConnectionManager;
 import com.dasari.android.maps.mapmyhouse.httpconnection.HttpConnectionManager.IOResponseListener;
@@ -22,6 +26,17 @@ public class RegisterMyLocation extends Activity implements IOResponseListener{
 	// Extra Constant for passing to register acitivity..
 	private static final String LOACL_DETAILS_PARCEL = "com.android.dasari.myLocalDetails";
 	
+	// Shared pref file.
+	private static final String MY_SHARED_PREF = "mapMyHousePref";
+	
+	// shared pref UID
+	private static final String MY_PREF_UID = "mapMyHousePref_uid";
+	
+	// shared pref Phone number
+	private static final String MY_PREF_PHONE_NUMBER = "mapMyHousePref_phone_number";
+	
+	// sharef pref Address
+	private static final String MY_PREF_ADDRESS = "mapMyHousePref_Address";
 	// Log tag for this class.
 	private static final String TAG = RegisterMyLocation.class.getCanonicalName();
 	
@@ -117,7 +132,7 @@ public class RegisterMyLocation extends Activity implements IOResponseListener{
 	// http params to pass.
 	private HttpParams mParams;
 
-	
+	private String mTotalAddress;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -132,8 +147,10 @@ public class RegisterMyLocation extends Activity implements IOResponseListener{
 		mLocalityExtra = locDetails.getLocality();
 		mPostalCodeExtra = locDetails.getPostalCode();
 		mCountryExtra = locDetails.getCountry();
-		getActionBar().setTitle(R.string.register_location);
-		getActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.action_bar));
+		ActionBar actionBar = getActionBar();
+		actionBar.setTitle(R.string.register_location);
+		actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.action_bar));
+		actionBar.setDisplayHomeAsUpEnabled(true);
 		initView();
 
 	}
@@ -176,14 +193,19 @@ public class RegisterMyLocation extends Activity implements IOResponseListener{
 				break;
 			case R.id.action_save :
 				registerLocation();
+				break;
+			case android.R.id.home :
+				this.finish();
+                return true;
 			default :
 				break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
+	
 	public void registerLocation() {
 
-		String totalAddress = mAddress.getText().toString() + "\n" +
+		mTotalAddress = mAddress.getText().toString() + "\n" +
 		                      mAdmin.getText().toString() + "\n" +
 				              mLocality.getText().toString() + "\n" +
 		                      mPostalCode.getText().toString() + "\n" +
@@ -192,7 +214,7 @@ public class RegisterMyLocation extends Activity implements IOResponseListener{
 		mParams.setParameter(LATITUDE, mLatitudeValue.getText().toString());
 		mParams.setParameter(LONGITUDE, mLongitudeValue.getText().toString());
 		mParams.setParameter(UNIQUE_KEY, mUniqueID.getText().toString());
-		mParams.setParameter(MY_ADDRESS, totalAddress);
+		mParams.setParameter(MY_ADDRESS, mTotalAddress);
 		mParams.setParameter("reserved_1","Reserved");
 		mParams.setParameter(PHONE_NUMBER, mPhoneNumber.getText().toString());
 		HttpConnectionManager.getInstance().makeRequest(RegisterMyLocation.this, postUrl ,HttpConnectionManager.REQUEST_TYPE.POST,
@@ -203,8 +225,28 @@ public class RegisterMyLocation extends Activity implements IOResponseListener{
 	@Override
 	public void onResponseReceived(Object response, int requestID) {
 		// TODO Auto-generated method stub
+		String result = (String)response;
+		Log.i("rami_response", "result .... "+ result);
+		String toastMessage = getResources().getString(R.string.unsucessfull_register);
+		if (result != null){
+			if (result.equalsIgnoreCase("true")){
+				writingToSharedPref();
+				toastMessage = getResources().getString(R.string.sucessfull_register);
+		
+			} 
+		}
+		Toast.makeText(this, toastMessage, Toast.LENGTH_SHORT).show();
 		finish();
 		
+	}
+	
+	private void writingToSharedPref() {
+		SharedPreferences.Editor editPref = getSharedPreferences(MY_SHARED_PREF, MODE_PRIVATE).edit();
+		Log.i("rami_details", "loaction" + mUniqueID.getText().toString() + mTotalAddress + mPhoneNumber.getText().toString());
+		editPref.putString(MY_PREF_UID, mUniqueID.getText().toString());
+		editPref.putString(MY_PREF_PHONE_NUMBER, mPhoneNumber.getText().toString());
+		editPref.putString(MY_PREF_ADDRESS, mTotalAddress);
+		editPref.commit();
 	}
 
 	@Override

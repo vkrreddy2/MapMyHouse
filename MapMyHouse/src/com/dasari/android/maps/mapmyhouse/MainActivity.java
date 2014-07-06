@@ -11,6 +11,7 @@ import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -73,6 +74,18 @@ public class MainActivity extends Activity
 	
 	// Number P==10, H==6, O==9;
 	private static final int QUERY_BY_PHONE_NUMBER = 1069;
+	
+	// Shared pref file.
+	private static final String MY_SHARED_PREF = "mapMyHousePref";
+	
+	// shared pref UID
+	private static final String MY_PREF_UID = "mapMyHousePref_uid";
+	
+	// shared pref Phone number
+	private static final String MY_PREF_PHONE_NUMBER = "mapMyHousePref_phone_number";
+	
+	// sharef pref Address
+	private static final String MY_PREF_ADDRESS = "mapMyHousePref_Address";
 
 	private GoogleMap mGoogleMap;
 
@@ -86,6 +99,8 @@ public class MainActivity extends Activity
 	// LocationClient mLocationClient;
 
 	private MenuItem mRegister;
+
+	private SharedPreferences mMySharedPrefs;
 
 
 	@Override
@@ -103,6 +118,8 @@ public class MainActivity extends Activity
 		MyLocationManager.getInstance().registerLocationListener(this);
 		MyLocationManager.getInstance().initialize(getApplicationContext());
 
+		mMySharedPrefs = getSharedPreferences(MY_SHARED_PREF, MODE_PRIVATE);
+		
 		myDetails = new LocationDetails();
 		mGoogleMap = ((MapFragment) getFragmentManager().findFragmentById(
 				R.id.map)).getMap();
@@ -257,12 +274,32 @@ public class MainActivity extends Activity
 	        if (cursor != null && cursor.moveToFirst()) {
 	            int numberIndex = cursor.getColumnIndex(CommonDataKinds.Phone.NUMBER);
 	            String number = cursor.getString(numberIndex);
-	            Log.i("rami", "phone nmber        "  +number );
-	            doSearch(number, QUERY_BY_PHONE_NUMBER);
+	            Log.i("rami", "phone nmber before..        "  +number );
+	            String uni_number = numberUnification(number);
+	            Log.i("rami", "phone nmber after..        "  + uni_number );
+
+	            doSearch(uni_number, QUERY_BY_PHONE_NUMBER);
 	        }
 	    }
 	}
 	
+	private String numberUnification(String number){
+		if (number.startsWith("0")){
+			number = number.substring(1);
+			Log.i("rami", "start 0.... "+ number);
+			return number;
+		
+		}else if (number.startsWith("+91")){
+			number = number.substring(3);
+			Log.i("rami", "start +91... "+ number);
+
+			return number;
+		}else {
+			Log.i("rami", "else.... "+ number);
+
+			return number;
+		}
+	}
 	@Override
 	public boolean onMyLocationButtonClick() {
 		MyLocationManager.getInstance().getLocation(getApplicationContext());
@@ -292,7 +329,6 @@ public class MainActivity extends Activity
 
 	@Override
 	public void onLocationChange(Location location) {
-		Log.i("rami", "in main acitvity-- onLocationcahnge");
 		myDetails = new LocationDetails();
 		myDetails.setLatitude(location.getLatitude());
 		myDetails.setLongitude(location.getLongitude());
@@ -300,8 +336,13 @@ public class MainActivity extends Activity
 		double localLong = myDetails.getLongitude();
 		LatLng myloc = new LatLng(localLat, localLong);
 		mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myloc, 13));
+		if (mMySharedPrefs != null){
+			mGoogleMap.addMarker(new MarkerOptions().title(mMySharedPrefs.getString(MY_PREF_UID, "myLocation"))
+					.snippet(mMySharedPrefs.getString(MY_PREF_ADDRESS, "This is my location")).position(myloc));
+		} else {
 		mGoogleMap.addMarker(new MarkerOptions().title("My Location")
 				.snippet("This is my location").position(myloc));
+		}
 		// TODO random code.. generaiton.
 
 		myDetails.setUniqueKey("rami99999");
@@ -420,7 +461,7 @@ public class MainActivity extends Activity
 		Log.i("rami", "in get respone");
 		if (response != null) {
 			Log.i("rami", "in respose != null");
-			Log.i(TAG, response.toString());
+			Log.i("rami", response.toString());
 			GsonBuilder gsonBuilder = new GsonBuilder();
 			Gson gson = gsonBuilder.create();
 			List<MyLocationResponseDao> list=null;
