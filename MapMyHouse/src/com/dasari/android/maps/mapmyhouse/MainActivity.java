@@ -41,6 +41,7 @@ import com.dasari.android.maps.mapmyhouse.httpconnection.HttpConnectionManager.R
 import com.dasari.android.maps.mapmyhouse.location.MyLocationManager;
 import com.dasari.android.maps.mapmyhouse.location.MyLocationManager.ILocationChangeListener;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.internal.ca;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
@@ -91,10 +92,12 @@ public class MainActivity extends Activity
 
 	private boolean mRegisterEnable = true;
 	private boolean mNavigationEnable = false;
-	private String mURLAll = "http://ibreddy.in/REST/MapMyHouse/GetAllData";
-	private String mURLUni = "http://ibreddy.in/REST/MapMyHouse/GetDataOfID?id=";
-	private String mURLPho = "http://ibreddy.in/REST/MapMyHouse/GetDataByPh?ph=";
+	private boolean mMyPageEnable = false;
 
+	private String mURLAll = "http://mapmyhouse.in/MapMyhouse/MapMyHouse/GetAllData";
+	private String mURLUni = "http://mapmyhouse.in/MapMyhouse/MapMyHouse/GetDataOfID?id=";
+	private String mURLPho = "http://mapmyhouse.in/MapMyhouse/MapMyHouse/GetDataByPh?ph=";
+	
 	// private Location mCurrentLocation;
 	// LocationClient mLocationClient;
 
@@ -192,7 +195,17 @@ public class MainActivity extends Activity
 		getMenuInflater().inflate(R.menu.main, menu);
 		// Associate searchable configuration with the SearchView
 		mRegister = menu.findItem(R.id.register);
-        mRegister.setEnabled(mRegisterEnable);
+        mRegister.setVisible(mRegisterEnable);
+        if(mRegisterEnable)
+        {
+            MenuItem myPage = menu.findItem(R.id.mypage);
+            myPage.setVisible(false);
+        }
+        else
+        {
+            MenuItem myPage = menu.findItem(R.id.mypage);
+            myPage.setVisible(true);
+        }
        // mRegister.
 		SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
 		SearchView searchView = (SearchView) menu.findItem(R.id.search)
@@ -225,7 +238,7 @@ public class MainActivity extends Activity
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		mRegister = menu.findItem(R.id.register);
 		MenuItem navigation = menu.findItem(R.id.navigation);
-		mRegister.setEnabled(mRegisterEnable);
+		mRegister.setVisible(mRegisterEnable);
 		navigation.setVisible(mNavigationEnable);
 		return true;
 	}
@@ -234,25 +247,32 @@ public class MainActivity extends Activity
 		// Handle action bar item clicks here. The action bar will
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.register) {
-			registerLocation();
-			//return true;
-		}
-		else if(id == R.id.navigation)
-		{
-			 Intent navigation = new Intent(Intent.ACTION_VIEW);
-			 			 navigation.setData(Uri.parse("geo:0,0?q=" + mLocationResponse.getMy_house_latitude()+ "," + mLocationResponse.getMy_house_longitude() + "("
-			 			 + mLocationResponse.getMy_house_address() + ")"));
-			 			 startActivity(navigation);			
-		}else if (id == R.id.Search_phone_number){
-			selectContactPhoneNumber();
-
-
+		switch (item.getItemId()) {
+			case R.id.navigation :
+				 Intent navigation = new Intent(Intent.ACTION_VIEW);
+	 			 navigation.setData(Uri.parse("geo:0,0?q=" + mLocationResponse.getMy_house_latitude()+ "," + mLocationResponse.getMy_house_longitude() + "("
+	 			 + mLocationResponse.getMy_house_address() + ")"));
+	 			 startActivity(navigation);			
+				break;
+			case R.id.register:
+				registerLocation();
+				break;
+			case R.id.Search_phone_number:
+				selectContactPhoneNumber();
+				break;
+			case R.id.mypage:
+				launchMyPageActivity();
+			default :
+				break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
 	
+	private void launchMyPageActivity() {
+		Intent intent = new Intent(this, MyLocationPage.class);
+		startActivity(intent);
+	}
+
 	public void selectContactPhoneNumber() {
 	    // Start an activity for the user to pick a phone number from contacts
 	    Intent intent = new Intent(Intent.ACTION_PICK);
@@ -337,6 +357,7 @@ public class MainActivity extends Activity
 		LatLng myloc = new LatLng(localLat, localLong);
 		mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myloc, 13));
 		if (mMySharedPrefs != null){
+			mRegisterEnable = false;
 			mGoogleMap.addMarker(new MarkerOptions().title(mMySharedPrefs.getString(MY_PREF_UID, "myLocation"))
 					.snippet(mMySharedPrefs.getString(MY_PREF_ADDRESS, "This is my location")).position(myloc));
 		} else {
@@ -344,14 +365,14 @@ public class MainActivity extends Activity
 				.snippet("This is my location").position(myloc));
 		}
 		// TODO random code.. generaiton.
-
+		invalidateOptionsMenu();
 		myDetails.setUniqueKey("rami99999");
 
 		new DownlaodAddressFormLatLog().execute(localLat, localLong);
 		// MyLocationDao myLocDao = new MyLocationDao();
 		// myLocDao.setMyHouseID("KA9999");
 		// myLocDao.setMyLocationLatitude(mLatitude);
-		// myLocDao.setMyLocationLongitude(mLongitude);
+		// myLoacDao.setMyLocationLongitude(mLongitude);
 		// myLocDao.setMyAddress("Flat# 311/A, Deverabisinahalli, Bangalore");
 		//
 		// MapMyHouseDBHelper.getInstance(getApplicationContext()).openDatabase();

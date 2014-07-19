@@ -1,0 +1,80 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:fillViewport="true" >
+
+    <LinearLayout
+        android:id="@+id/my_location_root_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:gravity="left"
+            android:text="@string/geo_info"
+            android:textColor="@color/text_header_background"
+            android:textSize="17sp" />
+
+        <View
+            android:id="@+id/divider1"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:background="@drawable/horizontal_divider_selector" />
+
+        <ImageView
+            android:id="@+id/map_view"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_margin="5dp"
+            android:contentDescription="mapview"
+            android:src="@drawable/ic_launcher" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:gravity="left"
+            android:text="@string/my_address_details"
+            android:textColor="@color/text_header_background"
+            android:textSize="17sp" />
+
+        <View
+            android:id="@+id/divider3"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:background="@drawable/horizontal_divider_selector" />
+
+        <TextView
+            android:id="@+id/map_my_house_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:gravity="left"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/phone_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:gravity="left"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:gravity="left"
+            android:textSize="17sp" />
+    </LinearLayout>
+
+</ScrollView>

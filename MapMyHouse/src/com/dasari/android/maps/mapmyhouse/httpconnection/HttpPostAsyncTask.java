@@ -18,6 +18,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Debug;
 import android.util.Log;
 
 import com.dasari.android.maps.mapmyhouse.R;
@@ -81,12 +82,12 @@ public class HttpPostAsyncTask extends AsyncTask<String, Integer, String> {
 			JSONObject jsonParams = new JSONObject();
 			jsonParams.put("latitude", mHttpParams.getParameter("latitude"));
 			jsonParams.put("longitude", mHttpParams.getParameter("longitude"));
-			jsonParams
-					.put("unique_key", mHttpParams.getParameter("unique_key"));
 			jsonParams.put("address", mHttpParams.getParameter("address"));
 			jsonParams.put("phoneNumber", mHttpParams.getParameter("phoneNumber"));
 			jsonParams.put("reserved_1", mHttpParams.getParameter("reserved_1"));
-
+			jsonParams.put("state", mHttpParams.getParameter("state"));
+			Log.v(TAG, jsonParams.toString());
+			Debug.waitForDebugger();
 			output = new DataOutputStream(connection.getOutputStream());
 			output.writeBytes(jsonParams.toString());
 			

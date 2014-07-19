@@ -77,9 +77,6 @@ public class RegisterMyLocation extends Activity implements IOResponseListener{
 	// Longitude value to get from intent extras.
 	private double mMyLongtitude = 333.333;
 	
-	// Unique value to display.
-	//TODO: The default value should be a value, which should not match random generation.
-	private String mMyUniqueKey = "Rami9999";
 	
 	// Latitude value to display. 
 	private TextView mLatitudeValue;
@@ -124,8 +121,7 @@ public class RegisterMyLocation extends Activity implements IOResponseListener{
 
 	private LocationDetails locDetails;
 
-	private String postUrl = "http://ibreddy.in/REST/MapMyHouse/addMapData";
-	
+	private String postUrl = "http://mapmyhouse.in/MapMyhouse/MapMyHouse/addMapData";
 	// Response id for post connection.
 	private static final int POST_REQUEST_ID = 216;
 
@@ -142,7 +138,6 @@ public class RegisterMyLocation extends Activity implements IOResponseListener{
 		locDetails = (LocationDetails)localIntent.getParcelableExtra(LOACL_DETAILS_PARCEL);
 		mMyLatitude = locDetails.getLatitude();
 		mMyLongtitude = locDetails.getLongitude();
-		mMyUniqueKey = locDetails.getUniqueKey();
 		mAdminExtra = locDetails.getAdmin();
 		mLocalityExtra = locDetails.getLocality();
 		mPostalCodeExtra = locDetails.getPostalCode();
@@ -159,12 +154,10 @@ public class RegisterMyLocation extends Activity implements IOResponseListener{
 	
 		mRootView = (LinearLayout)findViewById(R.id.root_view);
 		
-		mUniqueID = (EditText)mRootView.findViewById(R.id.myUniqueID);
 		mLatitudeValue = (TextView)mRootView.findViewById(R.id.mylatitudevalue);
 		mLatitudeValue.setText(String.valueOf(mMyLatitude));
 		mLongitudeValue = (TextView)mRootView.findViewById(R.id.mylongitudevalue);
 		mLongitudeValue.setText(String.valueOf(mMyLongtitude));
-		mUniqueString = (TextView)mRootView.findViewById(R.id.myUniqueID);
 		mAddress = (EditText)mRootView.findViewById(R.id.myAddress);
 		mLocality = (EditText)mRootView.findViewById(R.id.myLocality);
 		mLocality.setText(mLocalityExtra);
@@ -213,10 +206,10 @@ public class RegisterMyLocation extends Activity implements IOResponseListener{
 		mParams = new BasicHttpParams();
 		mParams.setParameter(LATITUDE, mLatitudeValue.getText().toString());
 		mParams.setParameter(LONGITUDE, mLongitudeValue.getText().toString());
-		mParams.setParameter(UNIQUE_KEY, mUniqueID.getText().toString());
 		mParams.setParameter(MY_ADDRESS, mTotalAddress);
 		mParams.setParameter("reserved_1","Reserved");
 		mParams.setParameter(PHONE_NUMBER, mPhoneNumber.getText().toString());
+		mParams.setParameter("state",  mAdmin.getText().toString());
 		HttpConnectionManager.getInstance().makeRequest(RegisterMyLocation.this, postUrl ,HttpConnectionManager.REQUEST_TYPE.POST,
 				POST_REQUEST_ID , RegisterMyLocation.this, mParams);
 		
@@ -229,21 +222,19 @@ public class RegisterMyLocation extends Activity implements IOResponseListener{
 		Log.i("rami_response", "result .... "+ result);
 		String toastMessage = getResources().getString(R.string.unsucessfull_register);
 		if (result != null){
-			if (result.equalsIgnoreCase("true")){
-				writingToSharedPref();
+				writingToSharedPref(result);
 				toastMessage = getResources().getString(R.string.sucessfull_register);
 		
 			} 
-		}
 		Toast.makeText(this, toastMessage, Toast.LENGTH_SHORT).show();
 		finish();
 		
 	}
 	
-	private void writingToSharedPref() {
+	private void writingToSharedPref(String uniqueID) {
 		SharedPreferences.Editor editPref = getSharedPreferences(MY_SHARED_PREF, MODE_PRIVATE).edit();
-		Log.i("rami_details", "loaction" + mUniqueID.getText().toString() + mTotalAddress + mPhoneNumber.getText().toString());
-		editPref.putString(MY_PREF_UID, mUniqueID.getText().toString());
+		Log.i("rami_details", "loaction" + uniqueID + mTotalAddress + mPhoneNumber.getText().toString());
+		editPref.putString(MY_PREF_UID, uniqueID);
 		editPref.putString(MY_PREF_PHONE_NUMBER, mPhoneNumber.getText().toString());
 		editPref.putString(MY_PREF_ADDRESS, mTotalAddress);
 		editPref.commit();

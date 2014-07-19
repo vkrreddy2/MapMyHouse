@@ -10,6 +10,21 @@
         android:layout_height="wrap_content"
         android:orientation="vertical" >
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:gravity="left"
+            android:text="@string/geo_info"
+            android:textColor="@color/text_header_background"
+            android:textSize="17sp" />
+
+        <View
+            android:id="@+id/divider1"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:background="@drawable/horizontal_divider_selector" />
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="40dp"
@@ -82,42 +97,24 @@
                 android:textSize="17sp" />
         </RelativeLayout>
 
-        <RelativeLayout
+        <TextView
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginTop="10dp" >
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:gravity="left"
+            android:text="@string/phone_number"
+            android:textColor="@color/text_header_background"
+            android:textSize="17sp" />
 
-            <TextView
-                android:id="@+id/unique_id"
-                android:layout_width="70dp"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="20dp"
-                android:gravity="center_horizontal"
-                android:text="@string/unique_id"
-                android:textSize="17sp" />
-
-            <TextView
-                android:id="@+id/view3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="20dp"
-                android:layout_toRightOf="@+id/unique_id"
-                android:text=":"
-                android:textSize="17sp" />
-
-            <EditText
-                android:id="@+id/myUniqueID"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_toRightOf="@+id/view3" />
-        </RelativeLayout>
+        <View
+            android:id="@+id/divider2"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:background="@drawable/horizontal_divider_selector" />
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="10dp" >
 
             <TextView
@@ -128,7 +125,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="20dp"
                 android:gravity="center_horizontal"
-                android:text="@string/phone_number"
+                android:text="@string/phone_number_short"
                 android:textSize="17sp" />
 
             <TextView
@@ -145,19 +142,27 @@
                 android:id="@+id/myPhone_number"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/edit_text_selector"
+                android:layout_margin="5dp"
                 android:layout_toRightOf="@+id/view4"
+                android:background="@drawable/edit_text_background_selector"
                 android:inputType="phone" />
         </RelativeLayout>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:gravity="left"
+            android:layout_marginLeft="10dp"
             android:layout_marginTop="10dp"
+            android:gravity="left"
             android:text="@string/my_address_details"
+            android:textColor="@color/text_header_background"
             android:textSize="17sp" />
+
+        <View
+            android:id="@+id/divider3"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:background="@drawable/horizontal_divider_selector" />
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -168,6 +173,8 @@
                 android:id="@+id/myAddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:background="@drawable/edit_text_background_selector"
                 android:hint="@string/enter_address"
                 android:maxLines="4" />
 
@@ -176,6 +183,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/myAddress"
+                android:layout_margin="5dp"
+                android:background="@drawable/edit_text_background_selector"
                 android:hint="@string/locality" />
 
             <EditText
@@ -183,6 +192,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/myLocality"
+                android:layout_margin="5dp"
+                android:background="@drawable/edit_text_background_selector"
                 android:hint="@string/admin" />
 
             <EditText
@@ -190,6 +201,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/myAdminArea"
+                android:layout_margin="5dp"
+                android:background="@drawable/edit_text_background_selector"
                 android:hint="@string/postal" />
 
             <EditText
@@ -197,6 +210,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/myPostalCode"
+                android:layout_margin="5dp"
+                android:background="@drawable/edit_text_background_selector"
                 android:hint="@string/country" />
         </RelativeLayout>
     </LinearLayout>
