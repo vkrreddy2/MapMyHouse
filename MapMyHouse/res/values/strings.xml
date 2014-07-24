@@ -83,4 +83,9 @@
     <string name="phone_number_short">Phone#</string>
     <string name="my_house_location">My House Location</string>
 	<string name="my_page">My Page</string>
+	<string name="move_to_my_location">Move to my location</string>
+	<string name="share_uid">Share Uid</string>
+	<string name="update_map">Update address</string>
+	<string name="mapview">Map view</string>
+	<string name="send_to">Send via</string>
 </resources>

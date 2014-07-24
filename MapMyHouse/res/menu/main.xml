@@ -31,10 +31,6 @@
         android:orderInCategory="400"
         android:showAsAction="ifRoom"
         android:title="@string/search_by_phone_number"/>
-    <item
-        android:id="@+id/share_via"
-        android:orderInCategory="500"
-        android:showAsAction="ifRoom"
-        android:title="@string/search_by_phone_number"/>
+
 
 </menu>

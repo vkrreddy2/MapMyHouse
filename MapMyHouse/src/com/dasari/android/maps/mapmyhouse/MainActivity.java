@@ -1,20 +1,16 @@
 package com.dasari.android.maps.mapmyhouse;
 
 import java.io.IOException;
-import java.lang.Character.UnicodeBlock;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Locale;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
@@ -22,16 +18,16 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.ContactsContract.CommonDataKinds;
+import android.telephony.PhoneNumberUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-//import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.Window;
-import android.widget.RelativeLayout;
+import android.widget.ImageButton;
 import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dasari.android.maps.mapmyhouse.dao.MyLocationResponseDao;
@@ -41,7 +37,6 @@ import com.dasari.android.maps.mapmyhouse.httpconnection.HttpConnectionManager.R
 import com.dasari.android.maps.mapmyhouse.location.MyLocationManager;
 import com.dasari.android.maps.mapmyhouse.location.MyLocationManager.ILocationChangeListener;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.internal.ca;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
@@ -76,6 +71,12 @@ public class MainActivity extends Activity
 	// Number P==10, H==6, O==9;
 	private static final int QUERY_BY_PHONE_NUMBER = 1069;
 	
+	// Shared pref for Latitude.
+	private static final String MY_PREF_LATITUDE = "mapMyHousePref_latitude";
+	
+	// Shared pref for Longitude.
+	private static final String MY_PREF_LONGITUDE = "mapMyHousePref_longitude";
+	
 	// Shared pref file.
 	private static final String MY_SHARED_PREF = "mapMyHousePref";
 	
@@ -105,6 +106,12 @@ public class MainActivity extends Activity
 
 	private SharedPreferences mMySharedPrefs;
 
+	private TextView my_location_id;
+
+	private ImageButton my_location_button;
+
+	private View my_location_vertical_divider;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -126,6 +133,10 @@ public class MainActivity extends Activity
 		myDetails = new LocationDetails();
 		mGoogleMap = ((MapFragment) getFragmentManager().findFragmentById(
 				R.id.map)).getMap();
+		my_location_id = (TextView)findViewById(R.id.my_location_id);
+		my_location_button = (ImageButton)findViewById(R.id.my_location_button);
+		
+		my_location_vertical_divider = (View)findViewById(R.id.vertical_divider);
 		mGoogleMap.setOnMyLocationButtonClickListener(this);
 		mGoogleMap.setMyLocationEnabled(true);
 
@@ -196,6 +207,7 @@ public class MainActivity extends Activity
 		// Associate searchable configuration with the SearchView
 		mRegister = menu.findItem(R.id.register);
         mRegister.setVisible(mRegisterEnable);
+        Log.i("rami", "create option menu " + mRegisterEnable);
         if(mRegisterEnable)
         {
             MenuItem myPage = menu.findItem(R.id.mypage);
@@ -222,7 +234,13 @@ public class MainActivity extends Activity
 		            }
 		            
 		            Log.v(TAG, query);
-		            doSearch(query, QUERY_BY_UNIQUE_ID);
+		            if (PhoneNumberUtils.isGlobalPhoneNumber(query)) {
+		            	Log.i("rami", "in phone number query");
+		            	doSearch(query, QUERY_BY_PHONE_NUMBER);
+		            } else {
+		            	Log.i("rami", "in unquie  query");
+			            doSearch(query, QUERY_BY_UNIQUE_ID);
+		            }
 				return true;
 			}
 
@@ -236,9 +254,9 @@ public class MainActivity extends Activity
 	}
 
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		mRegister = menu.findItem(R.id.register);
+		//mRegister = menu.findItem(R.id.register);
 		MenuItem navigation = menu.findItem(R.id.navigation);
-		mRegister.setVisible(mRegisterEnable);
+		//mRegister.setVisible(mRegisterEnable);
 		navigation.setVisible(mNavigationEnable);
 		return true;
 	}
@@ -354,20 +372,38 @@ public class MainActivity extends Activity
 		myDetails.setLongitude(location.getLongitude());
 		double localLat = myDetails.getLatitude();
 		double localLong = myDetails.getLongitude();
+		//String latToString = String.valueOf(localLat);
+		//String longToString = String.valueOf(localLong);
 		LatLng myloc = new LatLng(localLat, localLong);
+		Log.i("rami", "in onlocationchange");
 		mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myloc, 13));
-		if (mMySharedPrefs != null){
-			mRegisterEnable = false;
-			mGoogleMap.addMarker(new MarkerOptions().title(mMySharedPrefs.getString(MY_PREF_UID, "myLocation"))
-					.snippet(mMySharedPrefs.getString(MY_PREF_ADDRESS, "This is my location")).position(myloc));
-		} else {
-		mGoogleMap.addMarker(new MarkerOptions().title("My Location")
+		mGoogleMap.addMarker(new MarkerOptions().title("Present location")
 				.snippet("This is my location").position(myloc));
-		}
+	
+			//mGoogleMap.addMarker(new MarkerOptions().title(mMySharedPrefs.getString(MY_PREF_UID, "myLocation"))
+			//		.snippet(mMySharedPrefs.getString(MY_PREF_ADDRESS, "This is my location")).position(myloc));
+			// Adding the bottom layout, which shows the user's location
+			// Details and button (clickable) taking to users location.
+			if (mMySharedPrefs != null  && mMySharedPrefs.getString(MY_PREF_LATITUDE, null) !=null && 
+					mMySharedPrefs.getString(MY_PREF_LONGITUDE, null) !=null){
+				Log.i("rami", " lat and long not null");
+				mRegisterEnable = false;
+				invalidateOptionsMenu();
+			    toMyLocation();
+			}/*else {
+				mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myloc, 13));
+				mGoogleMap.addMarker(new MarkerOptions().title("Present location")
+						.snippet("This is my location").position(myloc));
+			}*/
+			
+		
+		//else {
+		//mGoogleMap.addMarker(new MarkerOptions().title("Present location")
+		//		.snippet("This is my location").position(myloc));
+		//}
 		// TODO random code.. generaiton.
-		invalidateOptionsMenu();
-		myDetails.setUniqueKey("rami99999");
-
+		//myDetails.setUniqueKey("rami99999");
+        if (mRegisterEnable)
 		new DownlaodAddressFormLatLog().execute(localLat, localLong);
 		// MyLocationDao myLocDao = new MyLocationDao();
 		// myLocDao.setMyHouseID("KA9999");
@@ -381,6 +417,44 @@ public class MainActivity extends Activity
 		//
 
 	}
+	
+	private void toMyLocation() {
+		if (my_location_id != null && my_location_button !=null) {
+			my_location_id.setVisibility(View.VISIBLE);
+			my_location_vertical_divider.setVisibility(View.VISIBLE);
+			my_location_button.setVisibility(View.VISIBLE);
+
+			final String Uid = mMySharedPrefs.getString(MY_PREF_UID, "My location");
+			final String address = mMySharedPrefs.getString(MY_PREF_ADDRESS, "This is my location");
+			my_location_id.setText(Uid + "\n" +
+					address);
+			my_location_button.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					String str_lat = mMySharedPrefs.getString(MY_PREF_LATITUDE, null);
+					String str_long = mMySharedPrefs.getString(MY_PREF_LONGITUDE, null);
+					double doub_lat = 189d;
+					double doub_long = 189d;
+					if (str_lat !=null && str_long !=null){
+						doub_lat = Double.parseDouble(str_lat);
+						doub_long = Double.parseDouble(str_long);
+					}
+					LatLng myLatLong = new LatLng(doub_lat, doub_long);
+					Log.i("rami", " before lat llang" + doub_lat + doub_long);
+
+					if (myLatLong != null) {
+				    mGoogleMap.clear();
+					mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLatLong, 15));
+
+					Log.i("rami", " IN BUTTON CLICK" + Uid + address);
+					mGoogleMap.addMarker(new MarkerOptions().title(Uid)
+							.snippet(address).position(myLatLong));
+					}
+				}
+			});
+		}
+	}
 
 	private class DownlaodAddressFormLatLog
 			extends
@@ -390,6 +464,7 @@ public class MainActivity extends Activity
 		protected Boolean doInBackground(Double... params) {
 			// Used to get the NEAREST address of the location pointed by
 			// longitude and latitude.
+			Log.i("rami", "background");
 			Geocoder myLoc = new Geocoder(MainActivity.this,
 					Locale.getDefault());
 			List<android.location.Address> myadd;
@@ -421,8 +496,8 @@ public class MainActivity extends Activity
 				Toast.makeText(MainActivity.this,
 						R.string.geocoder_connection_error, Toast.LENGTH_LONG)
 						.show();
-			mRegisterEnable = true;
-			invalidateOptionsMenu();
+			//mRegisterEnable = true;
+			//invalidateOptionsMenu();
 		}
 	}
 	/**

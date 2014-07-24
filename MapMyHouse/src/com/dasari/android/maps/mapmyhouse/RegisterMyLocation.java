@@ -29,6 +29,12 @@ public class RegisterMyLocation extends Activity implements IOResponseListener{
 	// Shared pref file.
 	private static final String MY_SHARED_PREF = "mapMyHousePref";
 	
+	// Shared pref for Latitude.
+	private static final String MY_PREF_LATITUDE = "mapMyHousePref_latitude";
+	
+	// Shared pref for Longitude.
+	private static final String MY_PREF_LONGITUDE = "mapMyHousePref_longitude";
+	
 	// shared pref UID
 	private static final String MY_PREF_UID = "mapMyHousePref_uid";
 	
@@ -234,6 +240,8 @@ public class RegisterMyLocation extends Activity implements IOResponseListener{
 	private void writingToSharedPref(String uniqueID) {
 		SharedPreferences.Editor editPref = getSharedPreferences(MY_SHARED_PREF, MODE_PRIVATE).edit();
 		Log.i("rami_details", "loaction" + uniqueID + mTotalAddress + mPhoneNumber.getText().toString());
+		editPref.putString(MY_PREF_LATITUDE, mLatitudeValue.getText().toString());
+		editPref.putString(MY_PREF_LONGITUDE, mLongitudeValue.getText().toString());
 		editPref.putString(MY_PREF_UID, uniqueID);
 		editPref.putString(MY_PREF_PHONE_NUMBER, mPhoneNumber.getText().toString());
 		editPref.putString(MY_PREF_ADDRESS, mTotalAddress);

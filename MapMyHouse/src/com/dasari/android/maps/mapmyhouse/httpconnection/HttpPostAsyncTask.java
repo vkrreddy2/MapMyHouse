@@ -43,7 +43,10 @@ public class HttpPostAsyncTask extends AsyncTask<String, Integer, String> {
 	@Override
 	protected void onPreExecute() {
 		checkDataConnectivity();
-		mProgressDialog = ProgressDialog.show(mContext, mContext.getResources().getString(R.string.post_progress_title), mContext.getResources().getString(R.string.post_progress_message),true);
+		mProgressDialog = new ProgressDialog(mContext);
+		mProgressDialog.setMessage(mContext.getResources().getString(R.string.post_progress_message));
+		mProgressDialog.setCancelable(true);
+		mProgressDialog.show();
 	}
 
 	private void checkDataConnectivity() {
@@ -90,6 +93,7 @@ public class HttpPostAsyncTask extends AsyncTask<String, Integer, String> {
 			Debug.waitForDebugger();
 			output = new DataOutputStream(connection.getOutputStream());
 			output.writeBytes(jsonParams.toString());
+			output.flush();
 			
 			String status = ((HttpURLConnection) connection).getResponseMessage();
 			int value = ((HttpURLConnection) connection).getResponseCode();
