@@ -8,5 +8,29 @@
         android:orderInCategory="100"
         android:showAsAction="always"
         android:title="@string/register"/>
+    <item
+        android:id="@+id/mypage"
+        android:orderInCategory="101"
+        android:showAsAction="always"
+        android:title="@string/my_page"/>
+    <item
+        android:id="@+id/search"
+        android:actionViewClass="android.widget.SearchView"
+        android:icon="@drawable/ic_action_search"
+        android:orderInCategory="200"
+        android:showAsAction="collapseActionView|ifRoom"
+        android:title="@string/search"/>
+    <item
+        android:id="@+id/navigation"
+        android:icon="@drawable/images"
+        android:orderInCategory="300"
+        android:showAsAction="always"
+        android:title="@string/navigation"/>
+    <item
+        android:id="@+id/Search_phone_number"
+        android:orderInCategory="400"
+        android:showAsAction="ifRoom"
+        android:title="@string/search_by_phone_number"/>
+
 
 </menu>

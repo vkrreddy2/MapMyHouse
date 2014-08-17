@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+        <item
+        android:id="@+id/share_via"
+        android:orderInCategory="500"
+        android:showAsAction="ifRoom"
+        android:title="@string/share_uid"/>
+      <!-- TODO Future
+      <item
+        android:id="@+id/edit_map"
+        android:orderInCategory="600"
+        android:showAsAction="ifRoom"
+        android:title="@string/update_map"/>
+          --> 
+
+</menu>

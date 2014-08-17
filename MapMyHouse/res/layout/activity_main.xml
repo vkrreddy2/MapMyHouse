@@ -9,17 +9,44 @@
         android:name="com.google.android.gms.maps.MapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-
+    
     <LinearLayout
-        android:id="@+id/search_containers"
         android:layout_width="match_parent"
-        android:layout_height="200dp" >
+        android:layout_height="match_parent"
+        android:orientation="horizontal" >
 
-        <ImageView
-            android:id="@+id/direction_button"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/ic_launcher" />
+        <TextView
+            android:id="@+id/my_location_id"
+            android:layout_width="wrap_content"
+            android:layout_height="45dp"
+            android:layout_gravity="bottom"
+            android:paddingLeft="5dp"
+            android:layout_weight="9"
+            android:visibility="gone"
+            android:textColor="#FFFFFF"
+            android:background="@color/text_header_background"
+            android:maxLines="2" />
+        
+        <View
+            android:id="@+id/vertical_divider"
+            android:layout_width="1dp"
+            android:layout_height="45dp"
+            android:layout_gravity="bottom"
+            android:background="@android:color/holo_green_dark"
+            android:visibility="gone" />
+
+        <ImageButton
+            android:id="@+id/my_location_button"
+            android:layout_width="wrap_content"
+            android:layout_height="45dp"
+            android:paddingRight="5dp"
+            android:layout_gravity="bottom"
+            android:layout_weight="1"
+            android:background="@color/text_header_background"
+            android:contentDescription="@string/move_to_my_location"
+            android:src="@drawable/ic_launcher"
+            android:clickable="true"
+            android:visibility="gone" />
     </LinearLayout>
 
 </FrameLayout>

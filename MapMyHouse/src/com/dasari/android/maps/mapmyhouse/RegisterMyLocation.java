@@ -1,17 +1,48 @@
 package com.dasari.android.maps.mapmyhouse;
 
 
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpParams;
+
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
-public class RegisterMyLocation extends Activity {
+import com.dasari.android.maps.mapmyhouse.httpconnection.HttpConnectionManager;
+import com.dasari.android.maps.mapmyhouse.httpconnection.HttpConnectionManager.IOResponseListener;
 
+public class RegisterMyLocation extends Activity implements IOResponseListener{
+
+	// Extra Constant for passing to register acitivity..
+	private static final String LOACL_DETAILS_PARCEL = "com.android.dasari.myLocalDetails";
+	
+	// Shared pref file.
+	private static final String MY_SHARED_PREF = "mapMyHousePref";
+	
+	// Shared pref for Latitude.
+	private static final String MY_PREF_LATITUDE = "mapMyHousePref_latitude";
+	
+	// Shared pref for Longitude.
+	private static final String MY_PREF_LONGITUDE = "mapMyHousePref_longitude";
+	
+	// shared pref UID
+	private static final String MY_PREF_UID = "mapMyHousePref_uid";
+	
+	// shared pref Phone number
+	private static final String MY_PREF_PHONE_NUMBER = "mapMyHousePref_phone_number";
+	
+	// sharef pref Address
+	private static final String MY_PREF_ADDRESS = "mapMyHousePref_Address";
 	// Log tag for this class.
 	private static final String TAG = RegisterMyLocation.class.getCanonicalName();
 	
@@ -27,6 +58,11 @@ public class RegisterMyLocation extends Activity {
 	// Constant extra value for UniqueKey.
 	private static final String UNIQUE_KEY = "unique_key";
 	
+	// Constant extra for phonenumber.
+	private static final String PHONE_NUMBER = "phoneNumber";
+	
+	// Constant extra for total address.
+	private static final String MY_ADDRESS = "address";
 	// Constant extra value for locality.
 	private static final String LOCALITY = "locality";
 	
@@ -47,9 +83,6 @@ public class RegisterMyLocation extends Activity {
 	// Longitude value to get from intent extras.
 	private double mMyLongtitude = 333.333;
 	
-	// Unique value to display.
-	//TODO: The default value should be a value, which should not match random generation.
-	private String mMyUniqueKey = "Rami9999";
 	
 	// Latitude value to display. 
 	private TextView mLatitudeValue;
@@ -59,7 +92,9 @@ public class RegisterMyLocation extends Activity {
 	
 	// Unique value to display.
 	private TextView mUniqueString;
-
+	
+	private EditText mUniqueID;
+	
 	// Address value which user types in edit text.
 	private EditText mAddress;
 	
@@ -75,6 +110,8 @@ public class RegisterMyLocation extends Activity {
 	// Country from Lat Lon.
 	private EditText mCountry;
 	
+	// Phone number.
+	private EditText mPhoneNumber;
 	
 	
 	// Root view for this layout.
@@ -87,35 +124,46 @@ public class RegisterMyLocation extends Activity {
 	private String mPostalCodeExtra;
 
 	private String mCountryExtra;
-	
 
+	private LocationDetails locDetails;
+
+	private String postUrl = "http://mapmyhouse.in/MapMyhouse/MapMyHouse/addMapData";
+	// Response id for post connection.
+	private static final int POST_REQUEST_ID = 216;
+
+	// http params to pass.
+	private HttpParams mParams;
+
+	private String mTotalAddress;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_register_my_location);
 		Intent localIntent = getIntent();
-		mMyLatitude = localIntent.getDoubleExtra(LATITUDE, 333.333);
-		mMyLongtitude = localIntent.getDoubleExtra(LONGITUDE, 333.333);
-		mMyUniqueKey = localIntent.getStringExtra(UNIQUE_KEY);
-		mLocalityExtra = localIntent.getStringExtra(LOCALITY);
-		mAdminExtra = localIntent.getStringExtra(ADMIN);
-		mPostalCodeExtra = localIntent.getStringExtra(POSTAL_CODE);
-		mCountryExtra = localIntent.getStringExtra(COUNTRY);
+		locDetails = (LocationDetails)localIntent.getParcelableExtra(LOACL_DETAILS_PARCEL);
+		mMyLatitude = locDetails.getLatitude();
+		mMyLongtitude = locDetails.getLongitude();
+		mAdminExtra = locDetails.getAdmin();
+		mLocalityExtra = locDetails.getLocality();
+		mPostalCodeExtra = locDetails.getPostalCode();
+		mCountryExtra = locDetails.getCountry();
+		ActionBar actionBar = getActionBar();
+		actionBar.setTitle(R.string.register_location);
+		//actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.action_bar));
+		actionBar.setDisplayHomeAsUpEnabled(true);
 		initView();
 
 	}
 
 	private void initView(){
-		Log.v(TAG, "lat" + mMyLatitude + "  long  "+ mMyLongtitude);
-		
-		mRootView = (RelativeLayout)findViewById(R.id.container);
+	
+		mRootView = (LinearLayout)findViewById(R.id.root_view);
 		
 		mLatitudeValue = (TextView)mRootView.findViewById(R.id.mylatitudevalue);
 		mLatitudeValue.setText(String.valueOf(mMyLatitude));
 		mLongitudeValue = (TextView)mRootView.findViewById(R.id.mylongitudevalue);
 		mLongitudeValue.setText(String.valueOf(mMyLongtitude));
-		mUniqueString = (TextView)mRootView.findViewById(R.id.uniqueString);
-		mUniqueString.setText(mMyUniqueKey);
 		mAddress = (EditText)mRootView.findViewById(R.id.myAddress);
 		mLocality = (EditText)mRootView.findViewById(R.id.myLocality);
 		mLocality.setText(mLocalityExtra);
@@ -125,27 +173,89 @@ public class RegisterMyLocation extends Activity {
 		mPostalCode.setText(mPostalCodeExtra);
 		mCountry = (EditText)mRootView.findViewById(R.id.myCountry);
 		mCountry.setText(mCountryExtra);
-			
+		
+		// Phone number view.
+	    mPhoneNumber = (EditText)mRootView.findViewById(R.id.myPhone_number);
 	}
 
-	public void okActivity(View v) {
-		Intent returnIntent = new Intent();
-		String Addressvalue = mAddress.getText().toString();
-		Log.v(TAG, "Click on OK button.. addressvalue  "+ Addressvalue);
-		returnIntent.putExtra(MY_ADDRESS_VALUE, Addressvalue);
-		setResult(RESULT_OK, returnIntent);
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.register_my_location, menu);
+		return super.onCreateOptionsMenu(menu);
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case R.id.action_cancel :
+				finish();
+				break;
+			case R.id.action_save :
+				registerLocation();
+				break;
+			case android.R.id.home :
+				this.finish();
+                return true;
+			default :
+				break;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+	
+	public void registerLocation() {
+
+		mTotalAddress = mAddress.getText().toString() + "\n" +
+		                      mAdmin.getText().toString() + "\n" +
+				              mLocality.getText().toString() + "\n" +
+		                      mPostalCode.getText().toString() + "\n" +
+				              mCountry.getText().toString();
+		mParams = new BasicHttpParams();
+		mParams.setParameter(LATITUDE, mLatitudeValue.getText().toString());
+		mParams.setParameter(LONGITUDE, mLongitudeValue.getText().toString());
+		mParams.setParameter(MY_ADDRESS, mTotalAddress);
+		mParams.setParameter("reserved_1","Reserved");
+		mParams.setParameter(PHONE_NUMBER, mPhoneNumber.getText().toString());
+		mParams.setParameter("state",  mAdmin.getText().toString());
+		HttpConnectionManager.getInstance().makeRequest(RegisterMyLocation.this, postUrl ,HttpConnectionManager.REQUEST_TYPE.POST,
+				POST_REQUEST_ID , RegisterMyLocation.this, mParams);
+		
+	}
+	
+	@Override
+	public void onResponseReceived(Object response, int requestID) {
+		// TODO Auto-generated method stub
+		String result = (String)response;
+		String toastMessage = getResources().getString(R.string.unsucessfull_register);
+		if (result != null){
+				writingToSharedPref(result);
+				toastMessage = getResources().getString(R.string.sucessfull_register);
+		
+			} 
+		Toast.makeText(this, toastMessage, Toast.LENGTH_SHORT).show();
 		finish();
 		
 	}
 	
-	public void cancelActivity(View v) {
-		Intent returnIntent = new Intent();
-		String Addressvalue = mAddress.getText().toString();
-		Log.v(TAG, " Click on Cancel button.. addressvalue  "+ Addressvalue);
-		returnIntent.putExtra(MY_ADDRESS_VALUE, Addressvalue);
-		setResult(RESULT_CANCELED, returnIntent);
-		Log.i("rami", "click cancel");
-		finish();
+	private void writingToSharedPref(String uniqueID) {
+		SharedPreferences.Editor editPref = getSharedPreferences(MY_SHARED_PREF, MODE_PRIVATE).edit();
+		Log.i("rami_details", "loaction" + uniqueID + mTotalAddress + mPhoneNumber.getText().toString());
+		editPref.putString(MY_PREF_LATITUDE, mLatitudeValue.getText().toString());
+		editPref.putString(MY_PREF_LONGITUDE, mLongitudeValue.getText().toString());
+		editPref.putString(MY_PREF_UID, uniqueID);
+		editPref.putString(MY_PREF_PHONE_NUMBER, mPhoneNumber.getText().toString());
+		editPref.putString(MY_PREF_ADDRESS, mTotalAddress);
+		editPref.commit();
+	}
+
+	@Override
+	public void onExceptionReceived(Exception ex) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onNoInternetAceess() {
+		// TODO Auto-generated method stub
 		
 	}
 
