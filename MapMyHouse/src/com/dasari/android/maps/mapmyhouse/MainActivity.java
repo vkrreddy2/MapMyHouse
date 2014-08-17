@@ -124,7 +124,7 @@ public class MainActivity extends Activity
 //				.parseColor("#90000000")));
 //		actionBar.setStackedBackgroundDrawable(new ColorDrawable(Color
 //				.parseColor("#80000000")));
-		getActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.action_bar));
+		//getActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.action_bar));
 		MyLocationManager.getInstance().registerLocationListener(this);
 		MyLocationManager.getInstance().initialize(getApplicationContext());
 
@@ -376,6 +376,7 @@ public class MainActivity extends Activity
 		//String longToString = String.valueOf(localLong);
 		LatLng myloc = new LatLng(localLat, localLong);
 		Log.i("rami", "in onlocationchange");
+		mGoogleMap.clear();
 		mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myloc, 13));
 		mGoogleMap.addMarker(new MarkerOptions().title("Present location")
 				.snippet("This is my location").position(myloc));

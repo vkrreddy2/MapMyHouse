@@ -46,6 +46,7 @@ public class HttpPostAsyncTask extends AsyncTask<String, Integer, String> {
 		mProgressDialog = new ProgressDialog(mContext);
 		mProgressDialog.setMessage(mContext.getResources().getString(R.string.post_progress_message));
 		mProgressDialog.setCancelable(true);
+		mProgressDialog.setCanceledOnTouchOutside(false);
 		mProgressDialog.show();
 	}
 

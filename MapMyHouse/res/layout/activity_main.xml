@@ -23,6 +23,7 @@
             android:paddingLeft="5dp"
             android:layout_weight="9"
             android:visibility="gone"
+            android:textColor="#FFFFFF"
             android:background="@color/text_header_background"
             android:maxLines="2" />
         

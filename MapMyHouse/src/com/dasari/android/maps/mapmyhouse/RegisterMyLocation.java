@@ -150,7 +150,7 @@ public class RegisterMyLocation extends Activity implements IOResponseListener{
 		mCountryExtra = locDetails.getCountry();
 		ActionBar actionBar = getActionBar();
 		actionBar.setTitle(R.string.register_location);
-		actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.action_bar));
+		//actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.action_bar));
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		initView();
 
@@ -225,7 +225,6 @@ public class RegisterMyLocation extends Activity implements IOResponseListener{
 	public void onResponseReceived(Object response, int requestID) {
 		// TODO Auto-generated method stub
 		String result = (String)response;
-		Log.i("rami_response", "result .... "+ result);
 		String toastMessage = getResources().getString(R.string.unsucessfull_register);
 		if (result != null){
 				writingToSharedPref(result);
