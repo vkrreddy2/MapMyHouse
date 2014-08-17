@@ -207,7 +207,6 @@ public class MainActivity extends Activity
 		// Associate searchable configuration with the SearchView
 		mRegister = menu.findItem(R.id.register);
         mRegister.setVisible(mRegisterEnable);
-        Log.i("rami", "create option menu " + mRegisterEnable);
         if(mRegisterEnable)
         {
             MenuItem myPage = menu.findItem(R.id.mypage);
@@ -235,10 +234,8 @@ public class MainActivity extends Activity
 		            
 		            Log.v(TAG, query);
 		            if (PhoneNumberUtils.isGlobalPhoneNumber(query)) {
-		            	Log.i("rami", "in phone number query");
 		            	doSearch(query, QUERY_BY_PHONE_NUMBER);
 		            } else {
-		            	Log.i("rami", "in unquie  query");
 			            doSearch(query, QUERY_BY_UNIQUE_ID);
 		            }
 				return true;
@@ -312,9 +309,7 @@ public class MainActivity extends Activity
 	        if (cursor != null && cursor.moveToFirst()) {
 	            int numberIndex = cursor.getColumnIndex(CommonDataKinds.Phone.NUMBER);
 	            String number = cursor.getString(numberIndex);
-	            Log.i("rami", "phone nmber before..        "  +number );
 	            String uni_number = numberUnification(number);
-	            Log.i("rami", "phone nmber after..        "  + uni_number );
 
 	            doSearch(uni_number, QUERY_BY_PHONE_NUMBER);
 	        }
@@ -324,17 +319,12 @@ public class MainActivity extends Activity
 	private String numberUnification(String number){
 		if (number.startsWith("0")){
 			number = number.substring(1);
-			Log.i("rami", "start 0.... "+ number);
 			return number;
 		
 		}else if (number.startsWith("+91")){
 			number = number.substring(3);
-			Log.i("rami", "start +91... "+ number);
-
 			return number;
 		}else {
-			Log.i("rami", "else.... "+ number);
-
 			return number;
 		}
 	}
@@ -375,7 +365,6 @@ public class MainActivity extends Activity
 		//String latToString = String.valueOf(localLat);
 		//String longToString = String.valueOf(localLong);
 		LatLng myloc = new LatLng(localLat, localLong);
-		Log.i("rami", "in onlocationchange");
 		mGoogleMap.clear();
 		mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myloc, 13));
 		mGoogleMap.addMarker(new MarkerOptions().title("Present location")
@@ -387,7 +376,6 @@ public class MainActivity extends Activity
 			// Details and button (clickable) taking to users location.
 			if (mMySharedPrefs != null  && mMySharedPrefs.getString(MY_PREF_LATITUDE, null) !=null && 
 					mMySharedPrefs.getString(MY_PREF_LONGITUDE, null) !=null){
-				Log.i("rami", " lat and long not null");
 				mRegisterEnable = false;
 				invalidateOptionsMenu();
 			    toMyLocation();
